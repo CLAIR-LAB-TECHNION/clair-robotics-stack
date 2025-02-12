@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<world>
+
+<!-- UR5e that is closer to the CLAIR lab, this one is at the origin, and rotated -->
+<!-- This way we can keep the robot XY direction convention with KLAMPT -->
+  <robot name="ur5e_1" file="ur5e_rob/ur5e_hires.rob" position="0 0 0" rotateZ="0"/>
+  <robot name="ur5e_2" file="ur5e_rob/ur5e_hires.rob" position="-0.76 -1.33 0" rotateRPY="0 0 3.1415926535"/>
+<!--position of robot 2 should have been -0.765 according to measurement, but fixed after alingment at the lab-->
+
+<!--tables and walls-->
+  <rigidObject name="table1"  position="0.365 0 0">
+     <geometry mesh="objects/cube.off" scale="1.25 0.84 0.01" translate="0 0 0" />
+  </rigidObject>
+  <rigidObject name="wall1"  position="0 0.36 0">
+     <geometry mesh="objects/cube.off" scale="2.44 0.01 3.0" translate="0 0 1.0" />
+  </rigidObject>
+
+  <rigidObject name="table2"  position="-0.805 -0.615 0">
+     <geometry mesh="objects/cube.off" scale="0.84 1.85 0.01" translate="0 0 0" />
+  </rigidObject>
+  <rigidObject name="wall2_1"  position="-1.165 -0.615 0">
+     <geometry mesh="objects/cube.off" scale="0.01 2.07 3.0" translate="0 0 1.0" />
+  </rigidObject>
+   <rigidObject name="wall2_2"  position="-0.805 -1.90 0">
+     <geometry mesh="objects/cube.off" scale="1.0 0.01 3.0" translate="0 0 1.0" />
+  </rigidObject>
+
+<!--we don't model the ur3 now, just keep away from it-->
+  <rigidObject name="keep_out_from_ur3_zone"  position="-0.725 -0.007 0.50">
+     <geometry mesh="objects/cube.off" scale="0.45 0.45 1.0" translate="0 0 0" />
+  </rigidObject>
+
+
+
+
+</world>
