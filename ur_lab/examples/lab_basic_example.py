@@ -19,7 +19,7 @@ hello_right[1] -= 0.3
 hello_right[2] -= 0.4
 path = [hello_left, hello_right, hello_left, hello_right, q]
 print("hello!")
-robot.move_path(path, speed=2., acceleration=1., blend_radius=0.15)
+robot.move_path(path, speed=2., acceleration=1., blend_radius=0.3)
 
 
 # go back home
