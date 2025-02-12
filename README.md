@@ -28,6 +28,6 @@ make sure:
 
 run simple example:
 ```bash
-python -m ur_lab.lab_basic_example
+python -m ur_lab.examples.lab_basic_example
 ```
 if you get errors, you can try and ping the robot ip adress. You can see the ip at *ur_lab/robot_inteface/robots_metadata.py*
