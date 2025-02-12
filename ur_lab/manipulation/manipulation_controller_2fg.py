@@ -10,7 +10,7 @@ from ur_lab.robot_inteface.vgc10_gripper import VG10C
 from ur_lab.utils import logging_util
 import time
 import logging
-import chime
+
 
 
 class ManipulationController2FG(RobotInterfaceWithMP):
@@ -103,7 +103,6 @@ class ManipulationController2FG(RobotInterfaceWithMP):
         if pick_up_start_config is None:
             logging.error(f"{self.robot_name} Could not find IK solution for pick up start pose")
             print("\033[93m Could not find IK solution, not moving. \033[0m")
-            chime.error()
             return
 
         pick_up_start_config = to_canonical_config(pick_up_start_config)
@@ -113,7 +112,6 @@ class ManipulationController2FG(RobotInterfaceWithMP):
         res = self.plan_and_moveJ(pick_up_start_config)
         if not res:
             print("\033[93m Could not find path, not moving. \033[0m")
-            chime.error()
             return
         self.moveL(point.tolist() + axis_angle.tolist(), speed=self.linear_speed,
                    acceleration=self.linear_acceleration)
@@ -148,14 +146,12 @@ class ManipulationController2FG(RobotInterfaceWithMP):
         if put_down_start_config is None:
             logging.error(f"{self.robot_name} Could not find IK solution for put down start pose")
             print("\033[93m Could not find IK solution, not moving. \033[0m")
-            chime.error()
             return
         put_down_start_config = to_canonical_config(put_down_start_config)
 
         res = self.plan_and_moveJ(put_down_start_config)
         if not res:
             print("\033[93m Could not find path, not moving. \033[0m")
-            chime.error()
             return
         self.moveL(point.tolist() + axis_angle.tolist(), speed=self.linear_speed,
                    acceleration=self.linear_acceleration)
@@ -179,7 +175,6 @@ class ManipulationController2FG(RobotInterfaceWithMP):
 
         if not res:
             if not replan_from_home_if_failed:
-                chime.error()
                 return
 
             logging.warning(f"{self.robot_name} replanning from home, probably couldn't find path"
@@ -187,7 +182,6 @@ class ManipulationController2FG(RobotInterfaceWithMP):
             self.plan_and_move_home()
             res = self.plan_and_move_to_xyzrz(x, y, start_height, rz)
             if not res:
-                chime.error()
                 return
 
         above_pickup_config = self.getActualQ()
@@ -226,7 +220,6 @@ class ManipulationController2FG(RobotInterfaceWithMP):
         res = self.plan_and_move_to_xyzrz(x, y, start_height, rz, speed=self.speed, acceleration=self.acceleration)
         if not res:
             if not replan_from_home_if_failed:
-                chime.error()
                 return
 
             logging.warning(f"{self.robot_name} replanning from home, probably couldn't find path"
@@ -234,7 +227,6 @@ class ManipulationController2FG(RobotInterfaceWithMP):
             self.plan_and_move_home()
             res = self.plan_and_move_to_xyzrz(x, y, start_height, rz, speed=self.speed, acceleration=self.acceleration)
             if not res:
-                chime.error()
                 return
 
         above_drop_config = self.getActualQ()
@@ -304,7 +296,6 @@ class ManipulationController2FG(RobotInterfaceWithMP):
 
         if not res:
             if not replan_from_home_if_failed:
-                chime.error()
                 return -1
 
             logging.warning(f"{self.robot_name} replanning from home, probably couldn't find path"
@@ -312,7 +303,6 @@ class ManipulationController2FG(RobotInterfaceWithMP):
             self.plan_and_move_home()
             res = self.plan_and_moveJ(goal_config)
             if not res:
-                chime.error()
                 return -1
 
         above_sensing_config = self.getActualQ()

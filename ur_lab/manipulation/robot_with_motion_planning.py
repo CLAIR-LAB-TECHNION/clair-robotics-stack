@@ -1,6 +1,5 @@
 import logging
 import time
-import chime
 import numpy as np
 from ur_lab.motion_planning.geometry_and_transforms import GeometryAndTransforms
 from ur_lab.motion_planning.motion_planner import MotionPlanner
@@ -64,8 +63,6 @@ class RobotInterfaceWithMP(RobotInterface):
 
         motion_palnner.visualize()
         time.sleep(0.2)
-
-        chime.theme('pokemon')
 
     @classmethod
     def build_from_robot_name_and_ip(cls, robot_ip, robot_name):
