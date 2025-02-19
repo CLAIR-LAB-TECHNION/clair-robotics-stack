@@ -87,10 +87,11 @@ class AbstractMotionPlanner:
         # vis.setColor(('world', 'ur5e_2'), 0, 0, 0.5)
 
         # set camera position:
-        viewport = vis.getViewport()
-        viewport.camera.tgt = [0, -0.6, 0.5]
-        viewport.camera.rot = [0, -0.4, 0.35]
-        viewport.camera.dist = 3.3
+        if backend == "GLUT":
+            viewport = vis.getViewport()
+            viewport.camera.tgt = [0, -0.6, 0.5]
+            viewport.camera.rot = [0, -0.4, 0.35]
+            viewport.camera.dist = 3.3
 
         vis.show()
         AbstractMotionPlanner.vis_initialized = True
