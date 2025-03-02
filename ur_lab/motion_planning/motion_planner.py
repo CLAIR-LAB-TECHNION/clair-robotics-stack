@@ -47,29 +47,3 @@ class MotionPlanner(AbstractMotionPlanner):
             all_attachments_geom.setElement(i, element)
 
         robot.link("ee_link").geometry().set(all_attachments_geom)
-
-
-if __name__ == "__main__":
-    planner = MotionPlanner()
-    planner.visualize(backend="PyQt5")
-
-    point = [0, 0, 1]
-    transform = planner.get_forward_kinematics("ur5e_1", planner.ur5e_1.getConfig()[1:7])
-
-    point_transformed = se3.apply(transform, point)
-    planner.show_point_vis(point_transformed)
-    print("point transformed: ", point_transformed)
-    # planner.is_config_feasible("ur5e_1", [0, 0, 0, 0, 0, 0])
-
-    # path = planner.plan_from_start_to_goal_config("ur5e_1",
-    #                                        [pi/2 , 0, 0, 0, 0, 0],
-    #                                        [0, -pi/2, 0, -pi/2, 0, 0])
-    # planner.show_path_vis("ur5e_1", path)
-
-    # will visualize the path on robot1
-    # path = planner.plan_from_start_to_goal_config("ur5e_2",
-    #                                        [0, 0, 0, 0, 0, 0],
-    #                                        [0, -pi/2, 0, -pi/2, 0, 0])
-    # planner.vis_path("ur5e_2", path)
-
-    time.sleep(300)

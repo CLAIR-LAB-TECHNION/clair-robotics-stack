@@ -44,17 +44,37 @@ class AbstractMotionPlanner:
         self.world.readFile(world_path)
 
         self.ee_offset = ee_offset
-        self.ur5e_1 = self.world.robot("ur5e_1")
-        self.ur5e_2 = self.world.robot("ur5e_2")
-        self.robot_name_mapping = {"ur5e_1": self.ur5e_1, "ur5e_2": self.ur5e_2}
+
+        robot_count = self.world.numRobots()
+        self.robot_name_mapping = {}
+        for i in range(robot_count):
+            robot = self.world.robot(i)
+            robot_name = robot.getName()
+            self.robot_name_mapping[robot_name] = robot
+
+        if attachments is None:
+            attachments = {}
+
         for robot in self.robot_name_mapping.values():
             self._set_ee_offset(robot)
-        self._add_attachments(self.ur5e_1, attachments["ur5e_1"])
-        self._add_attachments(self.ur5e_2, attachments["ur5e_2"])
+
+        # Add attachments for all robots
+        for robot_name, robot in self.robot_name_mapping.items():
+            # If specific attachments provided, use those
+            if robot_name in attachments:
+                robot_attachments = attachments[robot_name]
+            # Else if robot name has default attachments defined, use those
+            elif robot_name in self.default_attachments:
+                robot_attachments = self.default_attachments[robot_name]
+            # Otherwise use a generic default - just a gripper
+            else:
+                robot_attachments = ["gripper"]
+
+            self._add_attachments(robot, robot_attachments)
 
         self.world_collider = collide.WorldCollider(self.world)
 
-        self.settings = frozendict(self.default_settings)
+        self.settings = frozendict(settings)
 
         self.objects = {}
 
@@ -95,6 +115,10 @@ class AbstractMotionPlanner:
 
         vis.show()
         AbstractMotionPlanner.vis_initialized = True
+
+    def vis_close(self):
+        vis.kill()
+        AbstractMotionPlanner.vis_initialized = False
 
     def vis_config(self, robot_name, config_, vis_name="robot_config", rgba=(0, 0, 1, 0.5)):
         """
@@ -340,7 +364,7 @@ class AbstractMotionPlanner:
             robot.setConfig(start_config)
 
         ik_objective = ik.objective(robot.link("ee_link"), R=ee_transform[0], t=ee_transform[1])
-        res = ik.solve(ik_objective, tol=2e-3, iters=10000)
+        res = ik.solve(ik_objective, tol=1e-5, iters=100)
         if not res:
             # print("ik not solved")
             robot.setConfig(curr_config)
