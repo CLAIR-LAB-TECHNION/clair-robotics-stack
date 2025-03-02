@@ -30,7 +30,4 @@
      <geometry mesh="objects/cube.off" scale="0.45 0.45 1.0" translate="0 0 0" />
   </rigidObject>
 
-
-
-
 </world>
