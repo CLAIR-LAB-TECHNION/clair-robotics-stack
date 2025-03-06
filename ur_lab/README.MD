@@ -1,1 +1,1 @@
-![img.png](img.png)
+![arch_diagram.png](arch_diagram.png)
