@@ -19,7 +19,7 @@ poetry install --no-root
 
 ## Validating Installations for Lab Urs 
 make sure:
-* ur5e_2 robot is fully on (the one at the end)
+* both ur5e_2 robot is fully on (the one at the end)
 * make sure the robot is on remote control
 * make sure you are connected to the robot's network via wifi or ethernet
     the wifi password is on the bottom of the router
