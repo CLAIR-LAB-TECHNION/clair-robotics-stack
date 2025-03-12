@@ -449,6 +449,30 @@ class AbstractMotionPlanner:
                 time.sleep(sleep_between_configs)
             time.sleep(sleep_between_waypoints)
 
+    # TODO: This is a reference for attaching object to end effector. The ee link geometry is set to represent the object
+    #  that is being grasped. Probably need to support doing this given geometry
+    #
+    # def add_grasped_object_attachment(self):
+    #     if self.grasped_object_attachment_geom_id is None:
+    #         n_elements = self.ur5e_1.link("ee_link").geometry().numElements()
+    #         self.grasped_object_attachment_geom_id = n_elements
+    #
+    #     geom_id = self.grasped_object_attachment_geom_id
+    #     grasped_obj_obj = box(0.07, 0.16, 0.07, center=[0, -0.02, 0.13 - self.ee_offset])
+    #     grasped_obj_geom = Geometry3D()
+    #     grasped_obj_geom.set(grasped_obj_obj)
+    #
+    #     self.ur5e_1.link("ee_link").geometry().setElement(geom_id, grasped_obj_geom)
+    #
+    # def remove_grasped_object_attachment(self):
+    #     if self.grasped_object_attachment_geom_id is not None:
+    #         # dummy small box
+    #         grasped_obj_obj = box(0.001, 0.001, 0.001, center=[0, 0, 0])
+    #         grasped_obj_geom = Geometry3D()
+    #         grasped_obj_geom.set(grasped_obj_obj)
+    #         self.ur5e_1.link("ee_link").geometry().setElement(self.grasped_object_attachment_geom_id, grasped_obj_geom)
+
+    # TODO: Test if necessary:
     # def remove_object(self, name, vis_state=False):
     #     """
     #     Remove an object from the world and the dictionary.
