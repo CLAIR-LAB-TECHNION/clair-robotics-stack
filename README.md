@@ -1,6 +1,6 @@
 # clair-robotics-stack
 
-## Installation:
+## Installation for Lab:
 #### Clone the repository:
 ```bash
 git clone https://github.com/CLAIR-LAB-TECHNION/clair-robotics-stack.git
@@ -33,3 +33,15 @@ python -m ur_lab.examples.lab_basic_example
 if you get errors, you can try and ping the robot ip adress. You can see the ip at *ur_lab/robot_inteface/robots_metadata.py*
 
 Some examples are on jupyter notebooks, You should install jupyterlab on your environment to run them.
+
+## Installation for Mujoco Simulator:
+To run the simulation you will have to install the ur_mujoco_sim/requirements.txt directly to pip
+
+```bash
+pip install -r ur_mujoco_sim/requirements.txt
+```
+
+Then you can run the test file
+```bash
+python -m ur_mujoco_sim.sim_testing
+```
