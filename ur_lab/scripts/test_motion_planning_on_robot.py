@@ -1,7 +1,7 @@
 from ur_lab.robot_inteface.robot_interface import RobotInterfaceWithGripper
 import time
-from ur_lab.motion_planning.motion_planner import MotionPlanner
-from ur_lab.motion_planning.geometry_and_transforms import GeometryAndTransforms
+from motion_planning.motion_planner import MotionPlanner
+from motion_planning.geometry_and_transforms import GeometryAndTransforms
 from ur_lab.robot_inteface.robots_metadata import ur5e_1, ur5e_2
 
 target_position_world_rob1 = [-0.3, -0.5, 0.25]

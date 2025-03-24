@@ -1,8 +1,8 @@
 import logging
 import time
 import numpy as np
-from ur_lab.motion_planning.geometry_and_transforms import GeometryAndTransforms
-from ur_lab.motion_planning.motion_planner import MotionPlanner
+from motion_planning.geometry_and_transforms import GeometryAndTransforms
+from motion_planning.motion_planner import MotionPlanner
 from ur_lab.robot_inteface.robot_interface import RobotInterface, home_config
 from ur_lab.utils import logging_util
 

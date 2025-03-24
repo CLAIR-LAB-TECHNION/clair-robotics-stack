@@ -1,8 +1,8 @@
 import logging
 import time
 from ur_lab.manipulation.robot_with_motion_planning import RobotInterfaceWithMP
-from ur_lab.motion_planning.geometry_and_transforms import GeometryAndTransforms
-from ur_lab.motion_planning.motion_planner import MotionPlanner
+from motion_planning.geometry_and_transforms import GeometryAndTransforms
+from motion_planning.motion_planner import MotionPlanner
 from ur_lab.robot_inteface.vgc10_gripper import VG10C
 
 

@@ -1,6 +1,6 @@
 import cv2
 import typer
-from ur_lab.motion_planning.geometry_and_transforms import GeometryAndTransforms
+from motion_planning.geometry_and_transforms import GeometryAndTransforms
 from ur_lab.robot_inteface.robot_interface import RobotInterface
 from ur_lab.robot_inteface.robots_metadata import ur5e_1
 from ur_lab.camera.realsense_camera import RealsenseCamera
