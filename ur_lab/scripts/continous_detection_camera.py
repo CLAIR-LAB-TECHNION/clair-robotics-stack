@@ -4,8 +4,8 @@ from motion_planning.geometry_and_transforms import GeometryAndTransforms
 from ur_lab.robot_inteface.robot_interface import RobotInterface
 from ur_lab.robot_inteface.robots_metadata import ur5e_1
 from ur_lab.camera.realsense_camera import RealsenseCamera
-from ur_lab.vision.image_block_position_estimator import ImageBlockPositionEstimator
-from ur_lab.vision.utils import detections_plots_no_depth_as_image, detections_plots_with_depth_as_image
+from vision.image_block_position_estimator import ImageBlockPositionEstimator
+from vision.utils import detections_plots_no_depth_as_image, detections_plots_with_depth_as_image
 
 
 
