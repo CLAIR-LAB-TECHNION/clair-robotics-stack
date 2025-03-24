@@ -1,6 +1,6 @@
 import typer
-from ur_lab.motion_planning.motion_planner import MotionPlanner
-from ur_lab.motion_planning.geometry_and_transforms import GeometryAndTransforms
+from motion_planning.motion_planner import MotionPlanner
+from motion_planning.geometry_and_transforms import GeometryAndTransforms
 from klampt.math import se3
 from klampt import vis
 import time

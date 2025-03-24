@@ -1,7 +1,7 @@
 import typer
 
-from ur_lab.motion_planning.motion_planner import MotionPlanner
-from ur_lab.motion_planning.geometry_and_transforms import GeometryAndTransforms
+from motion_planning.motion_planner import MotionPlanner
+from motion_planning.geometry_and_transforms import GeometryAndTransforms
 from ur_lab.manipulation.manipulation_controller_2fg import ManipulationController2FG
 from ur_lab.robot_inteface.robots_metadata import ur5e_1, ur5e_2
 from ur_lab.utils.workspace_utils import (workspace_x_lims_default,

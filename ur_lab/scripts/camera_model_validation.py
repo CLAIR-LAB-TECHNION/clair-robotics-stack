@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 
 import cv2
-from ur_lab.motion_planning.motion_planner import MotionPlanner
-from ur_lab.motion_planning.geometry_and_transforms import GeometryAndTransforms
+from motion_planning.motion_planner import MotionPlanner
+from motion_planning.geometry_and_transforms import GeometryAndTransforms
 from ur_lab.manipulation.manipulation_controller_2fg import ManipulationController2FG
 from ur_lab.robot_inteface.robots_metadata import ur5e_1
 from ur_lab.camera.realsense_camera import RealsenseCamera

@@ -2,7 +2,7 @@ import cv2
 
 from ur_lab.vision.utils import crop_workspace
 from ur_lab.vision.object_detection import ObjectDetection
-from ur_lab.motion_planning.geometry_and_transforms import GeometryAndTransforms
+from motion_planning.geometry_and_transforms import GeometryAndTransforms
 import numpy as np
 from ur_lab.camera.realsense_camera import project_color_pixel_to_depth_pixel
 from ur_lab.camera.configurations_and_params import color_camera_intrinsic_matrix
