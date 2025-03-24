@@ -5,7 +5,7 @@ from klampt.math import se3
 from klampt import vis
 import time
 
-from ur_lab.vision.utils import lookat_verangle_distance_to_camera_transform
+from vision.utils import lookat_verangle_distance_to_camera_transform
 
 app = typer.Typer()
 
