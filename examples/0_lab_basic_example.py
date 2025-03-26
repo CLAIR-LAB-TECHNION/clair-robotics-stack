@@ -1,5 +1,5 @@
-from lab_setup.manipulation.manipulation_controller_2fg import ManipulationController2FG
-from lab_setup.robot_inteface.robots_metadata import ur5e_2
+from clair_robotics_stack.ur.lab_setup.manipulation.manipulation_controller_2fg import ManipulationController2FG
+from clair_robotics_stack.ur.lab_setup.robot_inteface.robots_metadata import ur5e_2
 
 
 robot = ManipulationController2FG.build_from_robot_name_and_ip(ur5e_2["ip"], ur5e_2["name"])
