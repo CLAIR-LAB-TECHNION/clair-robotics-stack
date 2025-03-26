@@ -1,13 +1,13 @@
 from typing import Sequence
 from scipy.spatial.transform import Rotation as R
 import numpy as np
-from lab_setup.manipulation.robot_with_motion_planning import RobotInterfaceWithMP, to_canonical_config
-from lab_setup.robot_inteface.robot_interface import RobotInterfaceWithGripper, home_config
-from motion_planning.motion_planner import MotionPlanner
-from motion_planning.geometry_and_transforms import GeometryAndTransforms
-from lab_setup.robot_inteface.twofg7_gripper import TwoFG7
-from lab_setup.robot_inteface.vgc10_gripper import VG10C
-from lab_setup.utils import logging_util
+from ..manipulation.robot_with_motion_planning import RobotInterfaceWithMP, to_canonical_config
+from ..robot_inteface.robot_interface import RobotInterfaceWithGripper, home_config
+from ....planning.motion.motion_planner import MotionPlanner
+from ....planning.motion.geometry_and_transforms import GeometryAndTransforms
+from ..robot_inteface.twofg7_gripper import TwoFG7
+from ..robot_inteface.vgc10_gripper import VG10C
+from ..utils import logging_util
 import time
 import logging
 
