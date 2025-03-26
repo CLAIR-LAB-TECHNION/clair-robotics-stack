@@ -1,8 +1,5 @@
 from abc import ABC, abstractmethod
 
-from unified_planning.shortcuts import UPState
-from numpy.typing import NDArray
-
 
 class ThreeLayerStateEstimator(ABC):
     @abstractmethod
