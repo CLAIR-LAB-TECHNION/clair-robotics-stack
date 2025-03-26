@@ -1,11 +1,11 @@
 from rtde_control import RTDEControlInterface as rtdectrl
 from rtde_receive import RTDEReceiveInterface as rtdercv
-from lab_setup.robot_inteface.twofg7_gripper import TwoFG7
+from .twofg7_gripper import TwoFG7
 from numpy import pi
 import time
 import logging
 
-from lab_setup.robot_inteface.vgc10_gripper import VG10C
+from .vgc10_gripper import VG10C
 
 home_config = [0, -pi/2, 0, -pi/2, 0, 0]
 

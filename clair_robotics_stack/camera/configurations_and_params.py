@@ -1,5 +1,5 @@
 import numpy as np
-from lab_setup.camera.utils import load_camera_params
+from ..camera.utils import load_camera_params
 import os
 
 # extrinsic camera parameters, relative to ee, no rotation just translation

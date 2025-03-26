@@ -2,7 +2,7 @@ import os
 from klampt.math import se3, so3
 from klampt import WorldModel, Geometry3D, RobotModel
 from klampt.model.geometry import box
-from motion_planning.abstract_motion_planner import AbstractMotionPlanner
+from .abstract_motion_planner import AbstractMotionPlanner
 
 
 class MotionPlanner(AbstractMotionPlanner):

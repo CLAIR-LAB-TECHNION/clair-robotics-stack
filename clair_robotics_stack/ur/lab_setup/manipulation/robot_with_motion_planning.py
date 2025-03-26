@@ -1,10 +1,10 @@
 import logging
 import time
 import numpy as np
-from motion_planning.geometry_and_transforms import GeometryAndTransforms
-from motion_planning.motion_planner import MotionPlanner
-from lab_setup.robot_inteface.robot_interface import RobotInterface, home_config
-from lab_setup.utils import logging_util
+from ....planning.motion.geometry_and_transforms import GeometryAndTransforms
+from ....planning.motion.motion_planner import MotionPlanner
+from ..robot_inteface.robot_interface import RobotInterface, home_config
+from ..utils import logging_util
 
 
 def canninical_last_joint_config(config):

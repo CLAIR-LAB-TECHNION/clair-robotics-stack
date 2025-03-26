@@ -7,9 +7,9 @@ from klampt.math import se3, so3
 import numpy as np
 from numpy import pi
 from scipy.spatial.transform import Rotation as R
-from ur_lab.camera.configurations_and_params import camera_in_ee
-from motion_planning.motion_planner import MotionPlanner
-from motion_planning.abstract_motion_planner import AbstractMotionPlanner
+from ...camera.configurations_and_params import camera_in_ee
+from .motion_planner import MotionPlanner
+from .abstract_motion_planner import AbstractMotionPlanner
 
 
 class GeometryAndTransforms:
