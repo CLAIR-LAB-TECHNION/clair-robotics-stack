@@ -1781,6 +1781,17 @@ mpmath = ">=1.1.0,<1.4"
 dev = ["hypothesis (>=6.70.0)", "pytest (>=7.1.0)"]
 
 [[package]]
+name = "timeoutcontext"
+version = "1.2.0"
+description = "A signal based timeout context manager"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "timeoutcontext-1.2.0.tar.gz", hash = "sha256:f4ac63bde9d22e300de5e9f0079648049b51492b4af74d3e6c109fd0c043ad82"},
+]
+
+[[package]]
 name = "torch"
 version = "2.6.0"
 description = "Tensors and Dynamic neural networks in Python with strong GPU acceleration"
@@ -2130,4 +2141,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "f193fba0d1a84b518ae22e031df6b0579f6617e2d79a72090d1a3c83d16947bb"
+content-hash = "bb109abe40adb8fa57397ebd2687469ef1d44b42a1ea2c30e2a76e3399fd907d"
