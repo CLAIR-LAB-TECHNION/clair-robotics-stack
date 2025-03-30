@@ -19,7 +19,8 @@ class TAMPRunnerCallbacks(ABC):
     """
     Abstract base class for callbacks to TAMPRunner.
     """
-    def __init__(self, runner: 'TAMPRunner', *args, **kwargs):
+
+    def __init__(self, runner: "TAMPRunner", *args, **kwargs):
         self.runner = runner
 
     @abstractmethod
@@ -69,7 +70,7 @@ class TAMPRunner:
         self.cur_motion_state = None
 
         # initialize planning components
-        #TODO configurable planner
+        # TODO configurable planner
         self.problem_sim = UPSequentialSimulator(problem)
         self.planner = OneshotPlanner(name="fast-downward")
 
@@ -81,7 +82,6 @@ class TAMPRunner:
         ################
 
         self.callbacks.on_episode_start()
-
 
         # perceive initial state
         self.update_states()
@@ -100,7 +100,10 @@ class TAMPRunner:
         # Episode Run #
         ###############
 
-        while (action_count < self.max_episode_actions or failures_count < self.max_action_failures):
+        while (
+            action_count < self.max_episode_actions
+            or failures_count < self.max_action_failures
+        ):
 
             # get next action
             action = self.get_next_action()
@@ -127,8 +130,9 @@ class TAMPRunner:
 
     def update_states(self):
         observations = self.sensor_fn()
-        self.cur_task_state = self.state_estimator.estimate_task_state(observations)
-        self.cur_motion_state = self.state_estimator.estimate_motion_state(observations)
+        self.cur_task_state, self.cur_motion_state, _ = (
+            self.state_estimator.estimate_state(observations)
+        )
 
     def get_next_action(self):
         # set problem initial state
@@ -168,23 +172,21 @@ class TAMPRunner:
             # attempt action
             try:
                 with timeout(self.action_timeout):  # one minute timeout
-                    suc = self.executer.execute_action(action_name, params, self.cur_motion_state)
+                    suc = self.executer.execute_action(
+                        action_name, params, self.cur_motion_state
+                    )
             except Exception as e:
                 print(
                     f"failed to execute action {action_name}({','.join(params)}) with error: {e}"
                 )
                 continue  # failure. continue loop
-            
+
             if not suc:
-                print(
-                    f"action {action_name}({','.join(params)}) resulted in failure"
-                )
+                print(f"action {action_name}({','.join(params)}) resulted in failure")
                 continue  # failure. continue loop
 
         self.callbacks.on_action_end(action, suc)
         return suc
 
-    
     def __del__(self):
         self.planner.destroy()
-
