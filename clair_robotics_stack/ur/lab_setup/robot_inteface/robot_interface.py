@@ -41,7 +41,7 @@ class RobotInterface(rtdectrl, rtdercv):
 
 class RobotInterfaceWithGripper(RobotInterface):
     def __init__(self, robot_ip, freq=50, gripper_id=0):
-        raise DeprecationWarning("This class is deprecated, use RobotInterfaceWith2FG7 instead")
+        DeprecationWarning("This class is deprecated, use RobotInterfaceWith2FG7 instead")
         super().__init__(robot_ip, freq)
         self.gripper = TwoFG7(robot_ip, gripper_id)
 

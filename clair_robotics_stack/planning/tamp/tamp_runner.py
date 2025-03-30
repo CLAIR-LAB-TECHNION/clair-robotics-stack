@@ -4,7 +4,6 @@ import os
 from typing import Callable
 
 from timeoutcontext import timeout
-from tqdm.auto import tqdm
 from unified_planning.engines.sequential_simulator import UPSequentialSimulator
 from unified_planning.engines import PlanGenerationResultStatus
 from unified_planning.shortcuts import Problem, OneshotPlanner, PlanValidator
@@ -20,11 +19,18 @@ class TAMPRunnerCallbacks(ABC):
     Abstract base class for callbacks to TAMPRunner.
     """
 
-    def __init__(self, runner: "TAMPRunner", *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        self.runner = None
+
+    def set_context(self, runner: "TAMPRunner"):
         self.runner = runner
 
     @abstractmethod
     def on_episode_start(self):
+        pass
+
+    @abstractmethod
+    def on_state_update(self, observations):
         pass
 
     @abstractmethod
@@ -53,8 +59,9 @@ class TAMPRunner:
         sensor_fn: Callable[[], dict],
         max_actions: int = 100,
         max_action_retries: int = 3,
+        max_action_failures: int = 3,
         action_timeout: int = 60,
-        callbacks: TAMPRunnerCallbacks = [],
+        callbacks: TAMPRunnerCallbacks = None,
     ):
         self.problem = problem
         self.executer = executer
@@ -62,8 +69,12 @@ class TAMPRunner:
         self.sensor_fn = sensor_fn
         self.max_actions = max_actions
         self.max_action_retries = max_action_retries
+        self.max_action_failures = max_action_failures
         self.action_timeout = action_timeout
         self.callbacks = callbacks
+
+        # set this runner as callbacks context
+        self.callbacks.set_context(self)
 
         # initialize states
         self.cur_task_state = None
@@ -101,7 +112,7 @@ class TAMPRunner:
         ###############
 
         while (
-            action_count < self.max_episode_actions
+            action_count < self.max_actions
             or failures_count < self.max_action_failures
         ):
 
@@ -133,6 +144,7 @@ class TAMPRunner:
         self.cur_task_state, self.cur_motion_state, _ = (
             self.state_estimator.estimate_state(observations)
         )
+        self.callbacks.on_state_update(observations)
 
     def get_next_action(self):
         # set problem initial state
@@ -184,6 +196,8 @@ class TAMPRunner:
             if not suc:
                 print(f"action {action_name}({','.join(params)}) resulted in failure")
                 continue  # failure. continue loop
+
+            break
 
         self.callbacks.on_action_end(action, suc)
         return suc

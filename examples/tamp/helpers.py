@@ -9,8 +9,8 @@ from clair_robotics_stack.planning.tamp.up_utils import state_dict_to_up_state
 from clair_robotics_stack.ur.lab_setup.manipulation.manipulation_controller_2fg import (
     ManipulationController2FG,
 )
-from clair_robotics_stack.ur.lab_setup.robot_inteface.robot_interface import (
-    RobotInterface,
+from clair_robotics_stack.ur.lab_setup.manipulation.robot_with_motion_planning import (
+    RobotInterfaceWithMP,
 )
 from clair_robotics_stack.camera.realsense_camera import RealsenseCameraWithRecording
 from clair_robotics_stack.vision.object_detection import ObjectDetection
@@ -32,6 +32,7 @@ class PickPlaceSensors:
 class PickPlaceStateEstimator(ThreeLayerStateEstimator):
     def __init__(
         self,
+        up_problem,
         camera_robot_ip,
         camera_config,
         block_classes,
@@ -41,9 +42,8 @@ class PickPlaceStateEstimator(ThreeLayerStateEstimator):
     ):
         super().__init__()
 
-        self.cam_bot = RobotInterface.build_from_robot_name_and_ip(
-            camera_robot_ip, "cam-bot"
-        )
+        self.up_problem = up_problem
+        self.cam_bot = RobotInterfaceWithMP.build_from_robot_name_and_ip(camera_robot_ip, 'ur5e_1')
 
         self.block_classes = block_classes
         all_block_classes = [b for bs in block_classes.values() for b in bs]
@@ -56,7 +56,7 @@ class PickPlaceStateEstimator(ThreeLayerStateEstimator):
         )
 
         # set camera in position
-        self.cam_bot.move_home()
+        # self.cam_bot.move_home(speed=1.0)
         self.cam_bot.moveJ(camera_config)
 
     def estimate_state(self, observations) -> tuple:
@@ -88,13 +88,13 @@ class PickPlaceStateEstimator(ThreeLayerStateEstimator):
             block_pos_dict[cls_name].append(self._get_block_pos(bbox, depth))
 
         motion_state = {}
-        for cls_name, block_pos in block_pos_dict.items():
-            # find the block name that matches the class name
-            for block_name, block_classes in block_classes.items():
-                if cls_name in block_classes:
-                    # if multiple blocks are detected, take the mean of the positions
-                    motion_state[block_name] = np.mean(block_pos, axis=0)
-                    continue  # at least one of the block names are expected to match
+        for block_name, block_detector_classes in self.block_classes.items():
+            potential_block_pos = []
+            for cls_name, block_pos in block_pos_dict.items():
+                if cls_name in block_detector_classes:
+                    potential_block_pos.extend(block_pos_dict[cls_name])
+            if potential_block_pos:
+                motion_state[block_name] = np.mean(potential_block_pos, axis=0)
 
         return motion_state
 
@@ -109,7 +109,10 @@ class PickPlaceStateEstimator(ThreeLayerStateEstimator):
         blocks = list(self.block_classes.keys())
         locations = list(self.location_bounds.keys())
 
-        task_state["handempty"] = True
+        # initial assumptions before checking predicates
+        task_state["handempty()"] = True
+        for location in locations:
+            task_state[f"occupied({location})"] = False
 
         # Check at predicate for each block and location
         for block in blocks:
@@ -127,10 +130,10 @@ class PickPlaceStateEstimator(ThreeLayerStateEstimator):
 
             # If any block is being held, hand is not empty
             if is_holding:
-                task_state["handempty"] = False
+                task_state["handempty()"] = False
 
         # convert to unified-planning state
-        return state_dict_to_up_state(task_state)
+        return state_dict_to_up_state(self.up_problem, task_state)
 
     def _get_block_pos(self, bbox, depth):
         block_center = [(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2]
@@ -159,7 +162,7 @@ class PickPlaceStateEstimator(ThreeLayerStateEstimator):
 
         # convert camera frame point to world frame point
         point_world = self.cam_bot.gt.point_camera_to_world(
-            p_cam, "cam-bot", self.cam_bot.getActualQ
+            p_cam, "ur5e_1", self.cam_bot.getActualQ()
         )
 
         return point_world
@@ -174,14 +177,16 @@ class PickPlaceStateEstimator(ThreeLayerStateEstimator):
 
     def _holding(self, block: str, motion_state: dict) -> bool:
         """Predicate: robot is holding the block"""
-        return motion_state[block][2] > self.holding_height
+        if block not in motion_state:
+            return False
+        return bool(motion_state[block][2] > self.holding_height)
 
 
 class PickPlaceActionExecutor(ActionExecuter):
     def __init__(self, manip_robot_ip, location_centers):
         super().__init__()
         self.manip_robot = ManipulationController2FG.build_from_robot_name_and_ip(
-            manip_robot_ip, "manip-bot"
+            manip_robot_ip, "ur5e_2"
         )
         self.location_centers = location_centers
 
@@ -190,17 +195,21 @@ class PickPlaceActionExecutor(ActionExecuter):
         self.manip_robot.pick_up(
             block_pos[0],
             block_pos[1],
-            0,
+            np.pi/2,
             start_height=0.2,
             replan_from_home_if_failed=True,
         )
+
+        return True  #TODO return False if failed
 
     def put_down(self, b, l):
         location_pos = self.location_centers[l]
         self.manip_robot.put_down(
             location_pos[0],
             location_pos[1],
-            0,
-            start_height=0.2,
+            np.pi/2,
+            start_height=0.15,
             replan_from_home_if_failed=True,
         )
+
+        return True  #TODO return False if failed
