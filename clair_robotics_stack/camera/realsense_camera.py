@@ -5,9 +5,9 @@ import cv2
 import matplotlib.pyplot as plt
 import pyrealsense2 as rs
 import numpy as np
-from lab_setup.camera.configurations_and_params import depth_fx, depth_fy, depth_ppx, depth_ppy, color_fx, color_fy, color_ppx, \
-    color_ppy, depth_to_color_translation
-from lab_setup.camera.utils import get_mean_depth
+from .configurations_and_params import (depth_fx, depth_fy, depth_ppx, depth_ppy, color_fx, color_fy, color_ppx, \
+    color_ppy, depth_to_color_translation)
+from .utils import get_mean_depth
 
 
 def project_color_pixel_to_depth_pixel(color_image_point, depth_image):
