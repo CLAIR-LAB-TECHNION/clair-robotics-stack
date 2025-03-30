@@ -24,7 +24,8 @@ dependencies = [
     "freetype-py (>=2.5.1,<3.0.0)",
     "glfw (>=2.8.0,<3.0.0)",
     "numpy (==1.26.4)",
-    "unified-planning[fast-downward] (>=1.2.0,<2.0.0)"
+    "unified-planning[fast-downward] (>=1.2.0,<2.0.0)",
+    "timeoutcontext (>=1.2.0,<2.0.0)"
 ]
 
 
