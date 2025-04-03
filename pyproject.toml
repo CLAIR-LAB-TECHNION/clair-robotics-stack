@@ -1,6 +1,6 @@
 [project]
 name = "clair-robotics-stack"
-version = "0.1.0"
+version = "0.0.0a1"
 description = ""
 authors = [
     {name = "yuvalgos",email = "yuvalgos@gmail.com"}
