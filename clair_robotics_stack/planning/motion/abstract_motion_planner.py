@@ -78,13 +78,6 @@ class AbstractMotionPlanner:
 
         self.objects = {}
 
-    def is_pyqt5_available(self):
-        try:
-            import PyQt5
-            return True
-        except ImportError:
-            return False
-
     def visualize(self, backend=None, window_name=None):
         """
         open visualization window
@@ -282,10 +275,6 @@ class AbstractMotionPlanner:
         length = self.compute_path_length(path)
         return length / distance
 
-    @abstractmethod
-    def _add_attachments(self, robot, attachments):
-        pass
-
     def _is_direct_path_possible(self, planner, start_config_, goal_config_):
         # EmbeddedRobotCspace only works with the active joints:
         start_config = self.klampt_to_config6d(start_config_)
@@ -380,47 +369,6 @@ class AbstractMotionPlanner:
     def _get_klampt_world_path(self):
         pass
 
-    def add_object_to_world(self, name, item):
-        """
-        Add a new object to the world.
-        :param name: Name of the object.
-        :param item: Dictionary containing the following keys:
-            - geometry_file: Path to the object's geometry file.
-            - coordinates: [x, y, z] coordinates.
-            - angle: Rotation matrix (so3).
-            - color: rgb array
-            - scale: Scaling factor of the object (default is 1,1,1).
-        """
-
-        obj = self.world.makeRigidObject(name)
-        geom = obj.geometry()
-        if not geom.loadFile(item["geometry_file"]):
-            raise ValueError(f"Failed to load geometry file: {item['geometry_file']}")
-
-        # Set the transformation (rotation + position)
-        if len(item["angle"]) != 9:
-            item["angle"] = so3.rotation(item["angle"], np.pi / 2)
-        transform = (item["angle"], item["coordinates"])
-        geom.setCurrentTransform(*transform)
-        if isinstance(item["scale"], float) or isinstance(item["scale"], int):
-            geom.scale(item["scale"])
-        else:
-            geom.scale(*item["scale"])
-
-        # Set the transformation for the rigid object
-        obj.setTransform(*transform)
-
-        # Set the object's color
-        obj.appearance().setColor(*item["color"])
-
-        # world collider need to be reinitialized after adding
-        self.world_collider = collide.WorldCollider(self.world)
-
-        # Save the object in the dictionary
-        self.objects[name] = obj
-
-        return obj
-
     def get_object(self, name):
         """
         Retrieve an Rigidobject object by name from the dictionary.
@@ -449,31 +397,45 @@ class AbstractMotionPlanner:
                 time.sleep(sleep_between_configs)
             time.sleep(sleep_between_waypoints)
 
-    # def remove_object(self, name, vis_state=False):
-    #     """
-    #     Remove an object from the world and the dictionary.
-    #     :param name: Name of the object to be removed.
-    #     :param vis_state: Boolean to visualize the workspace after removing the object.
-    #     """
-    #     if vis.shown():
-    #         vis_state = True
-    #         vis.show(False)
-    #         time.sleep(0.3)
-    #     self._remove_object(name)
-    #     if vis_state:
-    #         self.visualize(window_name="workspace")
-    #
-    # def _remove_object(self, name):
-    #     """
-    #     Remove an object from the world and the dictionary.
-    #     :param name: Name of the object to be removed.
-    #     """
-    #     obj = self.objects.pop(name, None)  # Remove from the dictionary
-    #     if obj is None:
-    #         print(f"Object '{name}' not found. Cannot remove.")
-    #     else:
-    #         self.world.remove(obj)
-    #         print(f"Object '{name}' removed from the dictionary and world.")
-    #
+    @abstractmethod
+    def add_object_to_world(self, name, item):
+        """
+        Add an object to the world and the dictionary.
+        """
+        pass
 
+    @abstractmethod
+    def _add_attachments(self, robot, attachments):
+        """
+        Add attachments to the robot.
+        """
+        pass
+
+    @abstractmethod
+    def remove_object(self, name, vis_state=False):
+        """
+        Remove an object from the world and the dictionary.
+        """
+        pass
+
+    @abstractmethod
+    def _remove_object(self, name):
+        """
+        Remove an object from the world and the dictionary.
+        """
+        pass
+
+    @abstractmethod
+    def remove_attachments(self, robot):
+        """
+        Removes attachments from the specified robot and resets them to default.
+        """
+        pass
+
+    def is_pyqt5_available(self):
+        try:
+            import PyQt5
+            return True
+        except ImportError:
+            return False
 
