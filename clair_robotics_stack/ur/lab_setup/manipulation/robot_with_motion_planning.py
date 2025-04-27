@@ -46,7 +46,7 @@ class RobotInterfaceWithMP(RobotInterface):
         return self.acceleration * 0.1
 
     def __init__(self, robot_ip, robot_name, motion_palnner: MotionPlanner,
-                 geomtry_and_transofms: GeometryAndTransforms, freq=50):
+                 geomtry_and_transofms: GeometryAndTransforms, freq=50, visualize=False):
         super().__init__(robot_ip, freq)
 
         logging_util.setup_logging()
@@ -56,13 +56,14 @@ class RobotInterfaceWithMP(RobotInterface):
         self.gt = geomtry_and_transofms
 
         # Add window name to distinguish between different visualizations
-        if not MotionPlanner.vis_initialized:
+        if visualize and not MotionPlanner.vis_initialized:
             motion_palnner.visualize(window_name="robots_visualization")
 
         self.setTcp([0, 0, 0.150, 0, 0, 0])
 
-        motion_palnner.visualize()
-        time.sleep(0.2)
+        if visualize:
+            motion_palnner.visualize()
+            time.sleep(0.2)
 
     @classmethod
     def build_from_robot_name_and_ip(cls, robot_ip, robot_name):
