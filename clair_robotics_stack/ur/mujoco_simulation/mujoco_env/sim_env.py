@@ -2,18 +2,21 @@
 from copy import deepcopy, copy
 from collections import namedtuple
 import mujoco as mj
-from mujoco_simulation.mujoco_env import MujocoEnv
-from mujoco_simulation.mujoco_env.world_utils.object_manager import ObjectManager
-from mujoco_simulation.mujoco_env.world_utils.grasp_manager import GraspManager
-from mujoco_simulation.utils.logging_util import setup_logging
-from mujoco_simulation.mujoco_env.world_utils.configurations_and_constants import *
+from clair_robotics_stack.ur.mujoco_simulation.mujoco_env import MujocoEnv
+from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.world_utils.object_manager import ObjectManager
+from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.world_utils.grasp_manager import GraspManager
+from clair_robotics_stack.ur.mujoco_simulation.utils.logging_util import setup_logging
+from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.world_utils.configurations_and_constants import *
 
 
 class SimEnv:
-    def __init__(self, render_mode='human', cfg=muj_env_config, render_sleep_to_maintain_fps=True):
+    def __init__(self, render_mode='rgb_array', cfg=muj_env_config, render_sleep_to_maintain_fps=True):
+        print('start')
         self.render_mode = render_mode
+        print('render_mode:', render_mode)
         self._env = MujocoEnv.from_cfg(cfg=cfg, render_mode=render_mode, frame_skip=frame_skip,
                                        sleep_to_maintain_fps=render_sleep_to_maintain_fps)
+        print('self._env:', self._env)
         self.frame_skip = frame_skip
         obs, info = self._env.reset()  # once, for info, later again
         self._mj_model = info['privileged']['model']
@@ -118,6 +121,17 @@ class SimEnv:
     def render(self):
         if self.render_mode == "human":
             return self._env.render()
+        elif self.render_mode == "rgb_array":
+            self._mj_data = self._env.sim.data
+            self.renderer.update_scene(self._mj_data, "robot-cam")
+            print("self.renderer._depth_rendering:",self.renderer._depth_rendering)
+            return self.renderer.render()
+        elif self.render_mode == "depth_array":
+            self._mj_data = self._env.sim.data
+            self.renderer.update_scene(self._mj_data, "robot-cam")
+            self.renderer.enable_depth_rendering()
+            print("self.renderer._depth_rendering:",self.renderer._depth_rendering)
+            return self.renderer.render()
         return None
 
     def get_state(self):

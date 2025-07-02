@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./clair_robotics_stack/ur",
+        "./clair_robotics_stack/ur"
+    ]
+}

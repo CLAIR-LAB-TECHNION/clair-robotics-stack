@@ -140,7 +140,8 @@ class TAMPRunner:
         self.callbacks.on_episode_end()
 
     def update_states(self):
-        observations = self.sensor_fn()
+        # observations = self.sensor_fn()
+        observations = self.sensor_fn
         self.cur_task_state, self.cur_motion_state, _ = (
             self.state_estimator.estimate_state(observations)
         )

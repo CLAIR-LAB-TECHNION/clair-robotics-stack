@@ -5,7 +5,7 @@ from gymnasium.envs.mujoco.mujoco_rendering import WindowViewer
 from mujoco import mjtGeom
 
 from ..task import Task
-from mujoco_simulation.mujoco_env.common.defs.types import Pos3D
+from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.common.defs.types import Pos3D
 from .scoring import multi_object_position_epsilon_success_score
 
 

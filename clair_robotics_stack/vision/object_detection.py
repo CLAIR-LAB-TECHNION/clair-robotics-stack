@@ -28,6 +28,9 @@ class ObjectDetection:
         # The model works with bgr!!!
         if is_rgb:
             for i in range(len(im_arr)):
+                print('type:', type(im_arr[i]))
+                im_arr[i] = np.array(im_arr[i])
+                print("shape", im_arr[i].shape)
                 im_arr[i] = cv2.cvtColor(im_arr[i], cv2.COLOR_RGB2BGR)
 
         results = self.yolo.predict(im_arr, conf=self.min_confidence, agnostic_nms=True, max_det=max_detections)

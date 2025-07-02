@@ -1,3 +1,7 @@
+from clair_robotics_stack.ur.mujoco_simulation.motion_planning.motion_executor import MotionExecutor
+from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.sim_env import SimEnv
+import argparse
+
 from clair_robotics_stack.ur.lab_setup.robot_inteface.robots_metadata import (
     ur5e_1,
     ur5e_2,
@@ -7,11 +11,15 @@ from clair_robotics_stack.planning.tamp.tamp_runner import (
     TAMPRunnerCallbacks,
 )
 from clair_robotics_stack.planning.tamp.up_utils import create_up_problem, get_object_names_dict
-from helpers import PickPlaceActionExecutor, PickPlaceStateEstimator, PickPlaceSensors
+from helpers import PickPlaceActionExecutor, PickPlaceStateEstimator, PickPlaceSensors, SimulationStateEstimator
 import matplotlib.pyplot as plt
+from clair_robotics_stack.planning.tamp.state_estimator import ThreeLayerStateEstimator
 
-DOMAIN_FILE = "domain.pddl"
-PROBLEM_FILE = "problem.pddl"
+import os
+import cv2
+
+DOMAIN_FILE = "./examples/tamp/domain.pddl"
+PROBLEM_FILE = "./examples/tamp/problem.pddl"
 
 # TODO configure camera pose
 CAMERA_ROBOT_CONFIG = [
@@ -68,32 +76,89 @@ class PickPlaceTampCallbacks(TAMPRunnerCallbacks):
         print("Episode ended")
 
 
-def main():
-    problem = create_up_problem(DOMAIN_FILE, PROBLEM_FILE)
-    executer = PickPlaceActionExecutor(ur5e_2["ip"], LOCATION_CENTERS)
+def main(use_simulation):
+    if not use_simulation:
+        print("here")
+        problem = create_up_problem(DOMAIN_FILE, PROBLEM_FILE)
+        executer = PickPlaceActionExecutor(ur5e_2["ip"], LOCATION_CENTERS)
 
-    block_names = get_object_names_dict(problem)['block']
-    block_classes = {
-        block_name: [block_name + " " + s for s in DEFAULT_BLOCK_CLASSES]
-        for block_name in block_names
-    }
+        block_names = get_object_names_dict(problem)['block']
+        block_classes = {
+            block_name: [block_name + " " + s for s in DEFAULT_BLOCK_CLASSES]
+            for block_name in block_names
+        }
 
-    state_estimator = PickPlaceStateEstimator(
-        problem, ur5e_1["ip"], CAMERA_ROBOT_CONFIG, block_classes, LOCATION_BOUNDS, HOLDING_HEIGHT,
-        detection_confidence_threshold=0.05
-    )
-    sensor_fn = PickPlaceSensors()
+        state_estimator = PickPlaceStateEstimator(
+            problem, ur5e_1["ip"], CAMERA_ROBOT_CONFIG, block_classes, LOCATION_BOUNDS, HOLDING_HEIGHT,
+            detection_confidence_threshold=0.05
+        )
+        sensor_fn = PickPlaceSensors()
 
-    callbacks = PickPlaceTampCallbacks()
-    runner = TAMPRunner(
-        problem=problem,
-        executer=executer,
-        state_estimator=state_estimator,
-        sensor_fn=sensor_fn,
-        callbacks=callbacks,
-    )
-    runner.run_episode()
+        callbacks = PickPlaceTampCallbacks()
+        runner = TAMPRunner(
+            problem=problem,
+            executer=executer,
+            state_estimator=state_estimator,
+            sensor_fn=sensor_fn,
+            callbacks=callbacks,
+        )
+        runner.run_episode()
+    else:
+        #TODO: add usage in executer and planner for the mujoco simulation
+        print("Simulation mode is not implemented yet.")
+        problem = create_up_problem(DOMAIN_FILE, PROBLEM_FILE)
+        print('declaration of env')
+        env = SimEnv()
+        print('declaration of executor')
+        executer = MotionExecutor(env)
+        print('declaration of block_names')
+        block_names = get_object_names_dict(problem)['block']
+        block_classes = {
+            block_name: [block_name + " " + s for s in DEFAULT_BLOCK_CLASSES]
+            for block_name in block_names
+        }
+        print('declaration of state_estimator')
+        state_estimator = SimulationStateEstimator(problem, block_classes, LOCATION_BOUNDS, HOLDING_HEIGHT,
+            detection_confidence_threshold=0.05)
 
+
+        rgb_path = "./clair_robotics_stack/ur/rgb_frames"
+        depth_path = "./clair_robotics_stack/ur/depth_frames" 
+        rgb_images = []
+        depth_images = []
+
+        for rgb_frame in os.listdir(rgb_path):
+            # Load and upscale the image
+            image_path = os.path.join(rgb_path, rgb_frame)
+            rgb_image = cv2.imread(image_path)
+            rgb_images.append(rgb_image)
+
+        for depth_frame in os.listdir(depth_path):
+            # Load and upscale the image
+            image_path = os.path.join(rgb_path, depth_frame)
+            depth_image = cv2.imread(image_path)
+            depth_images.append(depth_image)
+
+        # sensor_fn = #TODO
+        observations = {
+            "rgb": rgb_images,
+            "depth": depth_images
+        }
+
+        sensor_fn = observations
+
+        callbacks = PickPlaceTampCallbacks()
+        runner = TAMPRunner(
+            problem=problem,
+            executer=executer,
+            state_estimator=state_estimator,
+            sensor_fn=sensor_fn,
+            callbacks=callbacks,
+        )
+        runner.run_episode()
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Boolean argument example")
+    parser.add_argument('--use_simulation', action='store_true', help="Enable debug mode")
+    args = parser.parse_args()
+    main(args.use_simulation)

@@ -1,6 +1,6 @@
 import numpy as np
-from mujoco_simulation.motion_planning.simulation_motion_planner import SimulationMotionPlanner
-from mujoco_simulation.mujoco_env.sim_env import SimEnv
+from clair_robotics_stack.ur.mujoco_simulation.motion_planning.simulation_motion_planner import SimulationMotionPlanner
+from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.sim_env import SimEnv
 import logging
 
 FACING_DOWN_R = [[1, 0, 0],

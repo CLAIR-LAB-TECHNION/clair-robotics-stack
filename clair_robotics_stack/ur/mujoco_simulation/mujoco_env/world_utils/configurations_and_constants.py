@@ -1,6 +1,6 @@
 import numpy as np
 
-from mujoco_simulation.mujoco_env.tasks.null_task import NullTask
+from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.tasks.null_task import NullTask
 
 
 muj_env_config = dict(
