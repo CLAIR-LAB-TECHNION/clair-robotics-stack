@@ -140,6 +140,7 @@ class TAMPRunner:
         self.callbacks.on_episode_end()
 
     def update_states(self):
+        #TODO: fix this so will work in both cases
         # observations = self.sensor_fn()
         observations = self.sensor_fn
         self.cur_task_state, self.cur_motion_state, _ = (

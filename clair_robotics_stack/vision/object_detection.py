@@ -34,6 +34,7 @@ class ObjectDetection:
                 im_arr[i] = cv2.cvtColor(im_arr[i], cv2.COLOR_RGB2BGR)
 
         results = self.yolo.predict(im_arr, conf=self.min_confidence, agnostic_nms=True, max_det=max_detections)
+        # print('results:', results)
 
         bbox_list = []
         confidence_list = []

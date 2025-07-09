@@ -11,7 +11,7 @@ from clair_robotics_stack.planning.tamp.tamp_runner import (
     TAMPRunnerCallbacks,
 )
 from clair_robotics_stack.planning.tamp.up_utils import create_up_problem, get_object_names_dict
-from helpers import PickPlaceActionExecutor, PickPlaceStateEstimator, PickPlaceSensors, SimulationStateEstimator
+from helpers import PickPlaceActionExecutor, PickPlaceStateEstimator, PickPlaceSensors, SimulationMotionExecutor, SimulationStateEstimator
 import matplotlib.pyplot as plt
 from clair_robotics_stack.planning.tamp.state_estimator import ThreeLayerStateEstimator
 
@@ -33,17 +33,17 @@ CAMERA_ROBOT_CONFIG = [
 
 # TODO fill out appropriate bounds
 LOCATION_BOUNDS = {
-    "pos1": ([-0.63, -0.55, -0.1], [-0.58, -0.45, 0.1]),
-    "pos2": ([-0.81, -0.55, -0.1], [-0.71, -0.45, 0.1]),
-    "pos3": ([-0.63, -0.75, -0.1], [-0.58, -0.65, 0.1]),
-    "pos4": ([-0.81, -0.75, -0.1], [-0.71, -0.65, 0.1]),
+    "pos1": ([-0.75, -0.65, -0.1], [-0.65, -0.55, 0.1]),
+    "pos2": ([-0.75, -0.75, -0.1], [-0.65, -0.65, 0.1]),
+    "pos3": ([-0.75, -0.85, -0.1], [-0.65, -0.75, 0.1]),
+    "pos4": ([-0.75, -0.35, -0.1], [-0.71, -0.25, 0.1]),
 }
 
 LOCATION_CENTERS = {
     k: [(a + b) / 2 for a, b in zip(v[0], v[1])] for k, v in LOCATION_BOUNDS.items()
 }
 
-DEFAULT_BLOCK_CLASSES = ["cube", "block", "box", "wooden cube", "wooden block", "wooden box"]
+DEFAULT_BLOCK_CLASSES = ["cube", "block", "box","rectangle", "wooden cube", "wooden block", "wooden box", "wooden rectangle"]
 
 # TODO figure out holding height
 HOLDING_HEIGHT = 0.15
@@ -56,12 +56,12 @@ class PickPlaceTampCallbacks(TAMPRunnerCallbacks):
     def on_state_update(self, observations):
         print("State updated")
         det_res = self.runner.state_estimator.detector.detect_objects([observations["rgb"]])[-1][0]
-        plt.figure()
+        # plt.figure()
         out = self.runner.state_estimator.detector.get_annotated_images(det_res)
-        plt.imshow(out)
-        plt.show()
-        print("task_state:\n", self.runner.cur_task_state)
-        print("motion_state:\n", self.runner.cur_motion_state)
+        # plt.imshow(out)
+        # plt.show()
+        print("task_state from on_state_update:\n", self.runner.cur_task_state)
+        print("motion_state from on_state_update:\n", self.runner.cur_motion_state)
 
     def on_replan(self):
         print("Replanning")
@@ -110,7 +110,8 @@ def main(use_simulation):
         print('declaration of env')
         env = SimEnv()
         print('declaration of executor')
-        executer = MotionExecutor(env)
+        motion_executer = MotionExecutor(env)
+        executer = SimulationMotionExecutor(motion_executer, LOCATION_CENTERS)
         print('declaration of block_names')
         block_names = get_object_names_dict(problem)['block']
         block_classes = {

@@ -44,19 +44,19 @@
         <!-- Blocks representing 'X' -->
         <body name="block0" pos="-0.5 -0.8 0.025" quat="0. 0. 1. 0.">
             <freejoint name="block0_fj"/>
-            <geom type="box" size=".02 .02 .02" material="wood_material"/>
+            <!-- <geom type="box" size=".02 .02 .02" material="wood_material"/> -->
+            <geom type="box" size=".02 .02 .02" rgba="1 0 0 1"/>
+
         </body>
-        <body name="block1" pos="-0.5 -0.7 0.025" quat="0. 0. 1. 0.">
+        <body name="block1" pos="-0.5 -0.6 0.025" quat="0. 0. 1. 0.">
             <freejoint name="block1_fj"/>
-            <geom type="box" size=".02 .02 .02" material="wood_material"/>
+            <!-- <geom type="box" size=".02 .02 .02"  material="wood_material"/> -->
+            <geom type="box" size=".02 .02 .02" rgba="0 1 0 1"/>
         </body>
-        <body name="block2" pos="-0.5 -0.6 0.025" quat="0. 0. 1. 0.">
+        <body name="block2" pos="-0.6 -0.8 0.025" quat="0. 0. 1. 0.">
             <freejoint name="block2_fj"/>
-            <geom type="box" size=".02 .02 .02"  material="wood_material"/>
-        </body>
-        <body name="block3" pos="-0.6 -0.8 0.025" quat="0. 0. 1. 0.">
-            <freejoint name="block3_fj"/>
-            <geom type="box" size=".02 .02 .02" material="wood_material"/>
+            <!-- <geom type="box" size=".02 .02 .02" material="wood_material"/> -->
+            <geom type="box" size=".02 .02 .02" rgba="0 1 1 1"/>
         </body>
 
         <camera name="top-right" pos="1.3 -1.5 1.1" euler="1 0 1.1"/>
@@ -64,3 +64,10 @@
         <camera name="robot-cam" pos="1.3 -1.5 1.1" euler="1 0 1.1" fovy="60"/>
     </worldbody>
 </mujoco>
+
+
+<!-- <body name="block1" pos="-0.5 -0.7 0.025" quat="0. 0. 1. 0.">
+            <freejoint name="block1_fj"/>
+            <geom type="box" size=".02 .02 .02" material="wood_material"/>
+            <geom type="box" size=".02 .02 .02" rgba="1 1 0 1"/>
+        </body> -->

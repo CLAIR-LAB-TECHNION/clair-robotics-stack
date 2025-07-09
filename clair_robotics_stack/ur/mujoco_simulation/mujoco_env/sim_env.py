@@ -78,6 +78,7 @@ class SimEnv:
             self.robots_camera[agent] = [obs[agent]['camera'], obs[agent]['camera_pose']]
         self.gripper_state_closed = False
         self._grasp_manager.release_object()
+        print('block_positions: ', block_positions)
         self._object_manager.reset(randomize=randomize, block_positions=block_positions)
 
         self.step(self.robots_joint_pos, gripper_closed=False)

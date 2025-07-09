@@ -103,6 +103,7 @@ class PickPlaceStateEstimator(ThreeLayerStateEstimator):
         Convert motion state to task state using predicates from the PDDL domain.
         Task state is a dictionary of predicates and their values.
         """
+        print('motion_state from _estimate_task_state:', motion_state)
         task_state = {}
 
         # Get all blocks and locations from the motion state and predefined locations
@@ -224,7 +225,7 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         block_classes,
         location_bounds,
         holding_height,
-        detection_confidence_threshold=0.1,
+        detection_confidence_threshold=0.01,
     ):
         super().__init__()
 
@@ -237,6 +238,8 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         self.location_bounds = location_bounds
         self.holding_height = holding_height
 
+        print('all_block_classes', all_block_classes)
+
         self.detector = ObjectDetection(
             all_block_classes, min_confidence=detection_confidence_threshold
         )
@@ -246,6 +249,7 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         # self.cam_bot.moveJ(camera_config)
 
     def estimate_state(self, observations) -> tuple:
+        print('start estimate_state')
         motion_state = self._estimate_motion_state(observations)
         task_state = self._estimate_task_state(motion_state)
 
@@ -264,6 +268,9 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
             confidences[0].cpu().numpy(),
             results[0],
         )
+        print("bboxes:", bboxes)
+        print('confidences:', confidences)
+        print('results:', results)
         classes = results.boxes.cls.cpu().numpy()
         id_to_class = results.names
 
@@ -275,12 +282,20 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
 
         motion_state = {}
         for block_name, block_detector_classes in self.block_classes.items():
+            print('block_name:', block_name)
             potential_block_pos = []
             for cls_name, block_pos in block_pos_dict.items():
                 if cls_name in block_detector_classes:
                     potential_block_pos.extend(block_pos_dict[cls_name])
             if potential_block_pos:
                 motion_state[block_name] = np.mean(potential_block_pos, axis=0)
+
+        #TODO: remove when state estimator will be integrated
+        motion_state = {
+            'red': [-0.7, -0.6, 0.03],
+            'green': [-0.7, -0.7, 0.03],
+            'blue': [-0.7, -0.6, 0.03],
+        }
 
         return motion_state
 
@@ -356,8 +371,10 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
     def _at(self, block: str, location: str, motion_state: dict) -> bool:
         """Predicate: block is at location"""
         if block not in motion_state:
+            print(f"Block {block} not in motion state")
             return False
         block_pos = motion_state[block]
+        print('block_pos:', block_pos)
         min_pos, max_pos = self.location_bounds[location]
         return all(min_pos[i] <= block_pos[i] <= max_pos[i] for i in range(3))
 
@@ -367,3 +384,31 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
             return False
         return bool(motion_state[block][2] > self.holding_height)
 
+
+class SimulationMotionExecutor(ActionExecuter):
+    def __init__(self, motion_executer, location_centers):
+        super().__init__()
+        self.motion_executer = motion_executer
+        self.location_centers = location_centers
+
+    def pick_up(self, b, l):
+        block_pos = self._motion_state[b]
+        self.motion_executer.pick_up(
+            "ur5e_2",
+            block_pos[0],
+            block_pos[1],
+            start_height=0.2,
+        )
+
+        return True  #TODO return False if failed
+
+    def put_down(self, b, l):
+        location_pos = self.location_centers[l]
+        self.motion_executer.put_down(
+            "ur5e_2",
+            location_pos[0],
+            location_pos[1],
+            start_height=0.15,
+        )
+
+        return True  #TODO return False if failed
