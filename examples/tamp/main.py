@@ -11,7 +11,7 @@ from clair_robotics_stack.planning.tamp.tamp_runner import (
     TAMPRunnerCallbacks,
 )
 from clair_robotics_stack.planning.tamp.up_utils import create_up_problem, get_object_names_dict
-from helpers import PickPlaceActionExecutor, PickPlaceStateEstimator, PickPlaceSensors, SimulationMotionExecutor, SimulationStateEstimator
+from helpers import PickPlaceActionExecutor, PickPlaceStateEstimator, PickPlaceSensors, SimulationMotionExecutor, SimulationSensors, SimulationStateEstimator
 import matplotlib.pyplot as plt
 from clair_robotics_stack.planning.tamp.state_estimator import ThreeLayerStateEstimator
 
@@ -55,6 +55,7 @@ class PickPlaceTampCallbacks(TAMPRunnerCallbacks):
 
     def on_state_update(self, observations):
         print("State updated")
+        print("observations['rgb'].shape:", observations['rgb'].shape)
         det_res = self.runner.state_estimator.detector.detect_objects([observations["rgb"]])[-1][0]
         # plt.figure()
         out = self.runner.state_estimator.detector.get_annotated_images(det_res)
@@ -123,30 +124,30 @@ def main(use_simulation):
             detection_confidence_threshold=0.05)
 
 
-        rgb_path = "./clair_robotics_stack/ur/rgb_frames"
-        depth_path = "./clair_robotics_stack/ur/depth_frames" 
-        rgb_images = []
-        depth_images = []
+        # rgb_path = "./clair_robotics_stack/ur/rgb_frames"
+        # depth_path = "./clair_robotics_stack/ur/depth_frames" 
+        # rgb_images = []
+        # depth_images = []
 
-        for rgb_frame in os.listdir(rgb_path):
-            # Load and upscale the image
-            image_path = os.path.join(rgb_path, rgb_frame)
-            rgb_image = cv2.imread(image_path)
-            rgb_images.append(rgb_image)
+        # for rgb_frame in os.listdir(rgb_path):
+        #     # Load and upscale the image
+        #     image_path = os.path.join(rgb_path, rgb_frame)
+        #     rgb_image = cv2.imread(image_path)
+        #     rgb_images.append(rgb_image)
 
-        for depth_frame in os.listdir(depth_path):
-            # Load and upscale the image
-            image_path = os.path.join(rgb_path, depth_frame)
-            depth_image = cv2.imread(image_path)
-            depth_images.append(depth_image)
+        # for depth_frame in os.listdir(depth_path):
+        #     # Load and upscale the image
+        #     image_path = os.path.join(rgb_path, depth_frame)
+        #     depth_image = cv2.imread(image_path)
+        #     depth_images.append(depth_image)
 
-        # sensor_fn = #TODO
-        observations = {
-            "rgb": rgb_images,
-            "depth": depth_images
-        }
+        # # sensor_fn = #TODO
+        # observations = {
+        #     "rgb": rgb_images,
+        #     "depth": depth_images
+        # }
 
-        sensor_fn = observations
+        sensor_fn = SimulationSensors(env)
 
         callbacks = PickPlaceTampCallbacks()
         runner = TAMPRunner(

@@ -140,12 +140,16 @@ class TAMPRunner:
         self.callbacks.on_episode_end()
 
     def update_states(self):
+        print('start update_states')
         #TODO: fix this so will work in both cases
-        # observations = self.sensor_fn()
-        observations = self.sensor_fn
+        observations = self.sensor_fn()
+        # observations = self.sensor_fn
+        print('observations:', observations)
         self.cur_task_state, self.cur_motion_state, _ = (
             self.state_estimator.estimate_state(observations)
         )
+        print('finish update_states')
+
         self.callbacks.on_state_update(observations)
 
     def get_next_action(self):

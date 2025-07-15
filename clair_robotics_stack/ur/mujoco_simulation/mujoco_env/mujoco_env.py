@@ -160,6 +160,7 @@ class MujocoEnv(Env, EzPickle):
         else:
             self.renderer = OffscreenRenderer(self.sim.model, self.sim.data, self.episode.scene.render_camera,
                                               depth=self.render_mode == 'depth_array',
+                                            #   depth=True,
                                               segmentation=self.render_mode == 'segmentation',
                                               **self.episode.scene.renderer_cfg)
 

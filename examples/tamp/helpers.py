@@ -18,6 +18,10 @@ from clair_robotics_stack.camera.configurations_and_params import (
     color_camera_intrinsic_matrix,
 )
 
+from PIL import Image
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 class PickPlaceSensors:
     def __init__(self):
@@ -216,6 +220,30 @@ class PickPlaceActionExecutor(ActionExecuter):
         return True  #TODO return False if failed
 
 
+class SimulationSensors:
+    def __init__(self, env):
+        self.env = env
+
+    def __call__(self) -> dict:
+        print('enter __call__')
+        out = {}
+        out["rgb"], out["depth"] = self.env.render()
+
+        print('out:', out)
+
+        im = Image.fromarray(out["rgb"])
+        im.save(f'./rgb_frames/frame.png')
+
+        print('saved rgb frame')
+
+        depth_normalized = (out["depth"] - np.min(out["depth"])) / (np.max(out["depth"]) - np.min(out["depth"]))
+        plt.imsave(f'./depth_frames/frame.png', np.array(depth_normalized), cmap='gray')
+
+        print('saved dapth frame')
+
+        return out
+
+
 class SimulationStateEstimator(ThreeLayerStateEstimator):
     def __init__(
         self,
@@ -257,6 +285,7 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
 
     def _estimate_motion_state(self, observations) -> dict:
         # get observation data
+        print('observations:', observations)
         rgb, depth = observations["rgb"], observations["depth"]
 
         # detect objects
@@ -294,7 +323,7 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         motion_state = {
             'red': [-0.7, -0.6, 0.03],
             'green': [-0.7, -0.7, 0.03],
-            'blue': [-0.7, -0.6, 0.03],
+            'blue': [-0.7, -0.8, 0.03],
         }
 
         return motion_state
