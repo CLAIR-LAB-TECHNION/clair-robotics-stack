@@ -229,15 +229,16 @@ class SimulationSensors:
         out = {}
         out["rgb"], out["depth"] = self.env.render()
 
-        print('out:', out)
+        # print('out:', out)
 
         im = Image.fromarray(out["rgb"])
-        im.save(f'./rgb_frames/frame.png')
+        number = np.random.randint(0, 10000)
+        im.save(f'./rgb_frames/frame{number}.png')
 
         print('saved rgb frame')
 
         depth_normalized = (out["depth"] - np.min(out["depth"])) / (np.max(out["depth"]) - np.min(out["depth"]))
-        plt.imsave(f'./depth_frames/frame.png', np.array(depth_normalized), cmap='gray')
+        plt.imsave(f'./depth_frames/frame{number}.png', np.array(depth_normalized), cmap='gray')
 
         print('saved dapth frame')
 
@@ -285,11 +286,11 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
 
     def _estimate_motion_state(self, observations) -> dict:
         # get observation data
-        print('observations:', observations)
-        rgb, depth = observations["rgb"], observations["depth"]
+        # print('observations:', observations)
+        # rgb, depth = observations["rgb"], observations["depth"]
 
         # detect objects
-        bboxes, confidences, results = self.detector.detect_objects([rgb])
+        bboxes, confidences, results = self.detector.detect_objects([observations])
 
         # result is also returned as batch, we have only 1 element in the batch
         bboxes, confidences, results = (
@@ -406,7 +407,7 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         print('block_pos:', block_pos)
         min_pos, max_pos = self.location_bounds[location]
         return all(min_pos[i] <= block_pos[i] <= max_pos[i] for i in range(3))
-
+    #TODO: check taht there is no colflict in the heights, between static ones that i put to expected ones from self
     def _holding(self, block: str, motion_state: dict) -> bool:
         """Predicate: robot is holding the block"""
         if block not in motion_state:

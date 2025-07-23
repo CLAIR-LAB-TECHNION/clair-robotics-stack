@@ -2,6 +2,12 @@ from clair_robotics_stack.ur.mujoco_simulation.motion_planning.motion_executor i
 from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.sim_env import SimEnv
 import argparse
 
+import os
+
+import sys
+external_module_path = os.path.abspath('../semantic_state_estimator') 
+sys.path.append(external_module_path)
+
 from clair_robotics_stack.ur.lab_setup.robot_inteface.robots_metadata import (
     ur5e_1,
     ur5e_2,
@@ -15,7 +21,10 @@ from helpers import PickPlaceActionExecutor, PickPlaceStateEstimator, PickPlaceS
 import matplotlib.pyplot as plt
 from clair_robotics_stack.planning.tamp.state_estimator import ThreeLayerStateEstimator
 
-import os
+from semantic_state_estimator.semantic_state_estimator import SemanticEstimatorMultiImageRun
+
+# import semantic_state_estimator
+
 import cv2
 
 DOMAIN_FILE = "./examples/tamp/domain.pddl"
@@ -120,8 +129,13 @@ def main(use_simulation):
             for block_name in block_names
         }
         print('declaration of state_estimator')
-        state_estimator = SimulationStateEstimator(problem, block_classes, LOCATION_BOUNDS, HOLDING_HEIGHT,
-            detection_confidence_threshold=0.05)
+        # state_estimator = SimulationStateEstimator(problem, block_classes, LOCATION_BOUNDS, HOLDING_HEIGHT,
+        #     detection_confidence_threshold=0.05)
+        
+        state_estimator = SemanticEstimatorMultiImageRun(domain=DOMAIN_FILE, \
+                                                         problem=PROBLEM_FILE, 
+                                                         nl_converter_model_id="meta-llama/Meta-Llama-3-8B-Instruct",
+                                                         vqa_model_id='lmms-lab/llava-onevision-qwen2-0.5b-ov')
 
 
         # rgb_path = "./clair_robotics_stack/ur/rgb_frames"

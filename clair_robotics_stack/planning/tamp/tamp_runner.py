@@ -13,6 +13,8 @@ from .up_utils import *
 from .action_executer import ActionExecuter
 from .state_estimator import ThreeLayerStateEstimator
 
+from PIL import Image
+
 
 class TAMPRunnerCallbacks(ABC):
     """
@@ -144,10 +146,19 @@ class TAMPRunner:
         #TODO: fix this so will work in both cases
         observations = self.sensor_fn()
         # observations = self.sensor_fn
-        print('observations:', observations)
-        self.cur_task_state, self.cur_motion_state, _ = (
-            self.state_estimator.estimate_state(observations)
-        )
+        # print('observations:', observations)type
+        #TODO: add calculation of motion_state
+        if not 'SemanticEstimatorMultiImageRun' in str(type(self.state_estimator)):  
+            self.cur_task_state, self.cur_motion_state, _ = (
+                self.state_estimator.estimate_state(observations)
+            )
+        else:
+            rgb, depth = observations["rgb"], observations["depth"]
+            # pil_rgb = [Image.fromarray(r) for r in rgb]
+            pil_rgb = Image.fromarray(rgb)
+            self.cur_task_state, self.cur_motion_state, _ = (
+                self.state_estimator.estimate_state([pil_rgb])
+            )
         print('finish update_states')
 
         self.callbacks.on_state_update(observations)
