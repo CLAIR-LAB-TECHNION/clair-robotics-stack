@@ -169,6 +169,9 @@ class SimEnv:
     def get_block_positions(self):
         return list(self._object_manager.get_all_block_positions_dict().values())
 
+    def get_block_positions_dict(self):
+        return self._object_manager.get_all_block_positions_dict()
+
     def set_gripper(self, closed: bool):
         """
         close/open gripper and don't change robot configuration

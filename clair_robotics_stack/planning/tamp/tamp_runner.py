@@ -146,19 +146,29 @@ class TAMPRunner:
         #TODO: fix this so will work in both cases
         observations = self.sensor_fn()
         # observations = self.sensor_fn
-        # print('observations:', observations)type
+        print('observations type:', type(observations))
+        print('observations', observations)
         #TODO: add calculation of motion_state
         if not 'SemanticEstimatorMultiImageRun' in str(type(self.state_estimator)):  
             self.cur_task_state, self.cur_motion_state, _ = (
                 self.state_estimator.estimate_state(observations)
             )
+            print('cur_task_state in update_states:', self.cur_task_state)
+            print('cur_motion_state in update_states:', self.cur_motion_state)
         else:
             rgb, depth = observations["rgb"], observations["depth"]
             # pil_rgb = [Image.fromarray(r) for r in rgb]
             pil_rgb = Image.fromarray(rgb)
-            self.cur_task_state, self.cur_motion_state, _ = (
-                self.state_estimator.estimate_state([pil_rgb])
-            )
+            # self.cur_task_state, self.cur_motion_state, _ = (
+            #     self.state_estimator.estimate_state([pil_rgb])
+            # )
+            self.cur_task_state = self.state_estimator([pil_rgb])
+            print('cur_task_state in update_states:', self.cur_task_state)
+            objects_positions_in_simEnv =  self.executer.motion_executer.env.get_block_positions_dict()
+            print('type:', type(objects_positions_in_simEnv))
+            print('objects_positions_in_simEnv:', objects_positions_in_simEnv)
+
+
         print('finish update_states')
 
         self.callbacks.on_state_update(observations)

@@ -129,13 +129,13 @@ def main(use_simulation):
             for block_name in block_names
         }
         print('declaration of state_estimator')
-        # state_estimator = SimulationStateEstimator(problem, block_classes, LOCATION_BOUNDS, HOLDING_HEIGHT,
-        #     detection_confidence_threshold=0.05)
+        state_estimator = SimulationStateEstimator(problem, block_classes, LOCATION_BOUNDS, HOLDING_HEIGHT,
+            detection_confidence_threshold=0.05)
         
-        state_estimator = SemanticEstimatorMultiImageRun(domain=DOMAIN_FILE, \
-                                                         problem=PROBLEM_FILE, 
-                                                         nl_converter_model_id="meta-llama/Meta-Llama-3-8B-Instruct",
-                                                         vqa_model_id='lmms-lab/llava-onevision-qwen2-0.5b-ov')
+        # state_estimator = SemanticEstimatorMultiImageRun(domain=DOMAIN_FILE, \
+        #                                                  problem=PROBLEM_FILE, 
+        #                                                  nl_converter_model_id="meta-llama/Meta-Llama-3-8B-Instruct",
+        #                                                  vqa_model_id='lmms-lab/llava-onevision-qwen2-0.5b-ov')
 
 
         # rgb_path = "./clair_robotics_stack/ur/rgb_frames"
