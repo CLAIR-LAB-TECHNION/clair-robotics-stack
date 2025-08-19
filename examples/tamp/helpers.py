@@ -21,6 +21,9 @@ from clair_robotics_stack.camera.configurations_and_params import (
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+
+from utils import find_next_filename
 
 
 class PickPlaceSensors:
@@ -232,15 +235,16 @@ class SimulationSensors:
         # print('out:', out)
 
         im = Image.fromarray(out["rgb"])
-        number = np.random.randint(0, 10000)
-        im.save(f'./rgb_frames/frame{number}.png')
-
-        print('saved rgb frame')
+        dir_path='./rgb_frames'
+        filename = find_next_filename(dir_path=dir_path)
+        full_path = os.path.join(dir_path, filename)
+        im.save(full_path)
+        print(f"Saved rgb image to {full_path}") 
 
         depth_normalized = (out["depth"] - np.min(out["depth"])) / (np.max(out["depth"]) - np.min(out["depth"]))
-        plt.imsave(f'./depth_frames/frame{number}.png', np.array(depth_normalized), cmap='gray')
+        plt.imsave(f'./depth_frames/{filename}.png', np.array(depth_normalized), cmap='gray')
 
-        print('saved dapth frame')
+        print(f"Saved depth image to {filename}.png") 
 
         return out
 
@@ -287,10 +291,10 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
     def _estimate_motion_state(self, observations) -> dict:
         # get observation data
         # print('observations:', observations)
-        # rgb, depth = observations["rgb"], observations["depth"]
+        rgb, depth = observations["rgb"], observations["depth"]
 
         # detect objects
-        bboxes, confidences, results = self.detector.detect_objects([observations])
+        bboxes, confidences, results = self.detector.detect_objects([rgb])
 
         # result is also returned as batch, we have only 1 element in the batch
         bboxes, confidences, results = (
@@ -298,9 +302,9 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
             confidences[0].cpu().numpy(),
             results[0],
         )
-        print("bboxes:", bboxes)
-        print('confidences:', confidences)
-        print('results:', results)
+        # print("bboxes:", bboxes)
+        # print('confidences:', confidences)
+        # print('results:', results)
         classes = results.boxes.cls.cpu().numpy()
         id_to_class = results.names
 
@@ -310,6 +314,8 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
             cls_name = id_to_class[cls]
             block_pos_dict[cls_name].append(self._get_block_pos(bbox, depth))
 
+
+        print()
         motion_state = {}
         for block_name, block_detector_classes in self.block_classes.items():
             print('block_name:', block_name)
@@ -322,9 +328,9 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
 
         #TODO: remove when state estimator will be integrated
         motion_state = {
-            'red': [-0.7, -0.6, 0.03],
-            'green': [-0.7, -0.7, 0.03],
-            'blue': [-0.7, -0.8, 0.03],
+            'block0': [-0.7, -0.6, 0.03],
+            'block1': [-0.7, -0.7, 0.03],
+            'block2': [-0.7, -0.8, 0.03],
         }
 
         return motion_state
@@ -404,7 +410,7 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
             print(f"Block {block} not in motion state")
             return False
         block_pos = motion_state[block]
-        print('block_pos:', block_pos)
+        # print('block_pos:', block_pos)
         min_pos, max_pos = self.location_bounds[location]
         return all(min_pos[i] <= block_pos[i] <= max_pos[i] for i in range(3))
     #TODO: check taht there is no colflict in the heights, between static ones that i put to expected ones from self
@@ -423,22 +429,28 @@ class SimulationMotionExecutor(ActionExecuter):
 
     def pick_up(self, b, l):
         block_pos = self._motion_state[b]
-        self.motion_executer.pick_up(
+        print('block_pos in pick_up:', block_pos)
+        res = self.motion_executer.pick_up(
             "ur5e_2",
             block_pos[0],
             block_pos[1],
             start_height=0.2,
         )
 
-        return True  #TODO return False if failed
+        # return True  #TODO return False if failed
+        return res
+
 
     def put_down(self, b, l):
+        #TODO: same as pick_up
+        print('put down entered')
         location_pos = self.location_centers[l]
-        self.motion_executer.put_down(
+        res = self.motion_executer.put_down(
             "ur5e_2",
             location_pos[0],
             location_pos[1],
             start_height=0.15,
         )
 
-        return True  #TODO return False if failed
+        # return True  #TODO return False if failed
+        return res

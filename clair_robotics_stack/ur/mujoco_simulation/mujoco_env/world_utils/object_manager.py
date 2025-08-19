@@ -1,4 +1,5 @@
 import random
+import mujoco
 import numpy as np
 from typing import Dict, List
 
@@ -49,12 +50,18 @@ class ObjectManager:
                     block_location = [random.uniform(*self.workspace_x_lims), random.uniform(*self.workspace_y_lims),
                                       0.05]
             # set blocks to new positions
+            print('block_positions in reset:', block_positions)
             self.set_all_block_positions(block_positions)
         else:
             if block_positions:
                 self.set_all_block_positions(block_positions)
             else:
-                self.set_all_block_positions(list(self.initial_positions_dict.values()))
+                print('self.initial_positions_dict:', self.initial_positions_dict)
+                # self.set_all_block_positions(list(self.initial_positions_dict.values()))
+                positions = [list(pos) for pos in self.initial_positions_dict]
+                print('positions:', positions)
+                self.set_all_block_positions(positions)
+
 
     def get_object_pos(self, name: str):
         return self._mj_data.joint(name).qpos[:3]
@@ -94,6 +101,12 @@ class ObjectManager:
             a dictionary of block names to their positions, positions will be in format {name: [x, y ,z], ...}.
         """
         return [self.get_block_position_from_mj_id(self.objects_mjdata_dict[name].id) for name in self.object_names]
+
+    def get_all_block_positions_by_body_name(self)-> Dict[str, np.ndarray]:
+        joint_ids = [mujoco.mj_name2id(self._mj_model, mujoco.mjtObj.mjOBJ_JOINT, joint_name) for joint_name in self.object_names]
+        body_ids = [self._mj_model.jnt_bodyid[joint_id] for joint_id in joint_ids]
+        body_names = [mujoco.mj_id2name(self._mj_model, mujoco.mjtObj.mjOBJ_BODY, body_id) for body_id in body_ids]
+        return {body_name: self.get_block_position_from_mj_id(self.objects_mjdata_dict[name].id) for body_name, name in zip(body_names, self.object_names)}
 
     def set_block_position(self, block_id, position):
         """

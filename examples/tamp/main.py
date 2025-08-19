@@ -29,6 +29,7 @@ import cv2
 
 DOMAIN_FILE = "./examples/tamp/domain.pddl"
 PROBLEM_FILE = "./examples/tamp/problem.pddl"
+PROBLEM_SIM_FILE = './examples/tamp/problem_sim.pddl'
 
 # TODO configure camera pose
 CAMERA_ROBOT_CONFIG = [
@@ -59,17 +60,22 @@ HOLDING_HEIGHT = 0.15
 
 
 class PickPlaceTampCallbacks(TAMPRunnerCallbacks):
+
+    def __init__(self, se_type: bool):
+        self.se_type = se_type
+
     def on_episode_start(self):
         print("Episode started")
 
     def on_state_update(self, observations):
         print("State updated")
         print("observations['rgb'].shape:", observations['rgb'].shape)
-        det_res = self.runner.state_estimator.detector.detect_objects([observations["rgb"]])[-1][0]
-        # plt.figure()
-        out = self.runner.state_estimator.detector.get_annotated_images(det_res)
-        # plt.imshow(out)
-        # plt.show()
+        if self.se_type:
+            det_res = self.runner.state_estimator.detector.detect_objects([observations["rgb"]])[-1][0]
+            # plt.figure()
+            out = self.runner.state_estimator.detector.get_annotated_images(det_res)
+            # plt.imshow(out)
+            # plt.show()
         print("task_state from on_state_update:\n", self.runner.cur_task_state)
         print("motion_state from on_state_update:\n", self.runner.cur_motion_state)
 
@@ -104,7 +110,8 @@ def main(use_simulation):
         )
         sensor_fn = PickPlaceSensors()
 
-        callbacks = PickPlaceTampCallbacks()
+        se_type = True
+        callbacks = PickPlaceTampCallbacks(se_type)
         runner = TAMPRunner(
             problem=problem,
             executer=executer,
@@ -116,7 +123,7 @@ def main(use_simulation):
     else:
         #TODO: add usage in executer and planner for the mujoco simulation
         print("Simulation mode is not implemented yet.")
-        problem = create_up_problem(DOMAIN_FILE, PROBLEM_FILE)
+        problem = create_up_problem(DOMAIN_FILE, PROBLEM_SIM_FILE)
         print('declaration of env')
         env = SimEnv()
         print('declaration of executor')
@@ -133,7 +140,7 @@ def main(use_simulation):
             detection_confidence_threshold=0.05)
         
         # state_estimator = SemanticEstimatorMultiImageRun(domain=DOMAIN_FILE, \
-        #                                                  problem=PROBLEM_FILE, 
+        #                                                  problem=PROBLEM_SIM_FILE, 
         #                                                  nl_converter_model_id="meta-llama/Meta-Llama-3-8B-Instruct",
         #                                                  vqa_model_id='lmms-lab/llava-onevision-qwen2-0.5b-ov')
 
@@ -163,7 +170,8 @@ def main(use_simulation):
 
         sensor_fn = SimulationSensors(env)
 
-        callbacks = PickPlaceTampCallbacks()
+        se_type = False
+        callbacks = PickPlaceTampCallbacks(se_type)
         runner = TAMPRunner(
             problem=problem,
             executer=executer,

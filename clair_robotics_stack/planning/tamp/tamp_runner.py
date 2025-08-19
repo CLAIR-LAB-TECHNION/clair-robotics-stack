@@ -146,15 +146,19 @@ class TAMPRunner:
         #TODO: fix this so will work in both cases
         observations = self.sensor_fn()
         # observations = self.sensor_fn
-        print('observations type:', type(observations))
-        print('observations', observations)
+        # print('observations type:', type(observations))
+        # print('observations', observations)
         #TODO: add calculation of motion_state
         if not 'SemanticEstimatorMultiImageRun' in str(type(self.state_estimator)):  
             self.cur_task_state, self.cur_motion_state, _ = (
                 self.state_estimator.estimate_state(observations)
             )
             print('cur_task_state in update_states:', self.cur_task_state)
+            objects_positions_in_simEnv =  self.executer.motion_executer.env.get_block_positions_dict()
+            print('objects_positions_in_simEnv:', objects_positions_in_simEnv)
+            self.cur_motion_state = objects_positions_in_simEnv
             print('cur_motion_state in update_states:', self.cur_motion_state)
+            # print('cur_motion_state in update_states:', self.cur_motion_state)
         else:
             rgb, depth = observations["rgb"], observations["depth"]
             # pil_rgb = [Image.fromarray(r) for r in rgb]
@@ -162,13 +166,14 @@ class TAMPRunner:
             # self.cur_task_state, self.cur_motion_state, _ = (
             #     self.state_estimator.estimate_state([pil_rgb])
             # )
-            self.cur_task_state = self.state_estimator([pil_rgb])
+            task_state = self.state_estimator([pil_rgb])
+            self.cur_task_state = state_dict_to_up_state(self.problem, task_state)
             print('cur_task_state in update_states:', self.cur_task_state)
             objects_positions_in_simEnv =  self.executer.motion_executer.env.get_block_positions_dict()
-            print('type:', type(objects_positions_in_simEnv))
             print('objects_positions_in_simEnv:', objects_positions_in_simEnv)
-
-
+            self.cur_motion_state = objects_positions_in_simEnv
+            print('cur_motion_state in update_states:', self.cur_motion_state)
+            
         print('finish update_states')
 
         self.callbacks.on_state_update(observations)
@@ -180,16 +185,19 @@ class TAMPRunner:
 
         # check if current plan is still valid
         if self.cur_plan is not None and len(self.cur_plan.actions) > 0:
+            print('current plan is not empty. checking if it is still valid')
             # validate plan
             with PlanValidator(
                 problem_kind=self.problem.kind, plan_kind=self.cur_plan.kind
             ) as validator:
-
+                print('self.cur_plan:', self.cur_plan)
                 if validator.validate(self.problem, self.cur_plan):
+                    print("current plan is still valid")
                     # plan still valid. get next action
                     return self.cur_plan._actions.pop(0)
 
         # get new plan
+        print('replan')
         plan_res = self.planner.solve(self.problem)
         if plan_res.status != PlanGenerationResultStatus.SOLVED_SATISFICING:
             return None

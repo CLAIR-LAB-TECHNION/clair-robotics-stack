@@ -8,6 +8,7 @@ from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.world_utils.grasp_mana
 from clair_robotics_stack.ur.mujoco_simulation.utils.logging_util import setup_logging
 from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.world_utils.configurations_and_constants import *
 
+import time
 
 class SimEnv:
     def __init__(self, render_mode='rgb_array', cfg=muj_env_config, render_sleep_to_maintain_fps=True):
@@ -90,25 +91,33 @@ class SimEnv:
 
     def step(self, target_joint_pos, gripper_closed=None):
         # if reset_pid:
-        #     self._pid_controller.reset_endpoint(target_joint_pos)
+        #    ( self._pid_controller.reset_endpoint(target_joint_pos)
+        print('start time of step:', time.time())
         if gripper_closed is None:
             gripper_closed = self.gripper_state_closed
         self.gripper_state_closed = gripper_closed
 
         self._env_step(target_joint_pos)
+        print('self.robots_joint_pos in step:', self.robots_joint_pos)
+
         self._clip_joint_velocities()
 
         if gripper_closed:
             if self._grasp_manager.attached_object_name is not None:
+                print('gripper is closed. updates grasped_object_pose')
                 self._grasp_manager.update_grasped_object_pose()
             else:
-                self._grasp_manager.grasp_block_if_close_enough()
+                is_close_enough = self._grasp_manager.grasp_block_if_close_enough()
+                print('is_close_enough:', is_close_enough)
         else:
+            print('gripper is not closed, releasing object')
             self._grasp_manager.release_object()
 
         if self.render_mode == "human":
             self._env.render()
 
+        state = self.get_state()
+        print('state in end of step:', state)
         return self.get_state()
 
     def simulate_steps(self, n_steps):
@@ -127,11 +136,13 @@ class SimEnv:
             self.renderer.update_scene(self._mj_data, "robot-cam")
             print("self.renderer._depth_rendering 128:",self.renderer._depth_rendering)
             rgb = self.renderer.render()
-            self.renderer.enable_depth_rendering()
-            depth = self.renderer.render()
-            self.renderer.disable_depth_rendering()
-            return rgb, depth
-            # return rgb
+            # self.renderer.enable_depth_rendering()
+            # depth = self.renderer.render()
+            # self.renderer.disable_depth_rendering()
+            # print("rgb shape:", rgb.shape)
+            # print("depth shape:", depth.shape)
+            # return rgb, depth
+            return rgb
         elif self.render_mode == "depth_array":
             self._mj_data = self._env.sim.data
             self.renderer.update_scene(self._mj_data, "robot-cam")
@@ -170,7 +181,7 @@ class SimEnv:
         return list(self._object_manager.get_all_block_positions_dict().values())
 
     def get_block_positions_dict(self):
-        return self._object_manager.get_all_block_positions_dict()
+        return self._object_manager.get_all_block_positions_by_body_name()
 
     def set_gripper(self, closed: bool):
         """
@@ -209,6 +220,7 @@ class SimEnv:
             self.robots_joint_velocities[agent] = ob['robot_state'][6:12]
             # self.robots_force[agent] = obs[agent]['sensor']
             self.robots_camera[agent] = [obs[agent]['camera'], obs[agent]['camera_pose']]
+        # print('self.robots_joint_pos:', self.robots_joint_pos)
 
     def get_ee_pos(self):
         return deepcopy(self._ee_mj_data.xpos)

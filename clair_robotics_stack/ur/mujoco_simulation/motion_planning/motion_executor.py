@@ -45,7 +45,9 @@ class MotionExecutor:
     def __init__(self, env: SimEnv):
         self.env = env
         self.motion_planner = SimulationMotionPlanner()
-        self.env.reset()
+        # self.env.reset()
+        self.env.reset(randomize=False)
+
 
         self.default_config = [0.0, -1.2, 0.8419, -1.3752, -1.5739, -2.3080]
 
@@ -53,47 +55,66 @@ class MotionExecutor:
 
         self.update_all_robots_configs_in_mp()
 
+        print('self.env.frame_skip:', self.env.frame_skip)
         self.time_step = self.env._mj_model.opt.timestep * self.env.frame_skip
 
     def update_all_robots_configs_in_mp(self):
         state = self.env.get_state()
+        print('state in update_all_robots_configs_in_mp:', state)
         for robot, pose in state['robots_joint_pos'].items():
             self.motion_planner.update_robot_config(robot, pose)
+        print('state after:', state)
+        
 
     def moveJ(self, robot_name, target_joints, speed=1.0, acceleration=1.0, tolerance=0.003):
+        print('start moveJ')
         self.zero_all_robots_vels_except(robot_name)
 
         current_joints = self.env.robots_joint_pos[robot_name]
+        print("current_joints:",current_joints)
+        print('target_joints:', target_joints)
         current_velocities = self.env.robots_joint_velocities[robot_name]
 
         logging.info(f"MovingJ {robot_name} from {current_joints} to {target_joints}")
 
         # Calculate the joint differences
         joint_diffs = target_joints - current_joints
+        print("joint_diffs:",joint_diffs)
 
         # Calculate the time needed for the movement based on max velocity and acceleration
         max_joint_diff = np.max(np.abs(joint_diffs))
         time_to_max_velocity = speed / acceleration
         distance_at_max_velocity = max_joint_diff - 0.5 * acceleration * time_to_max_velocity ** 2
-
+        print("distance_at_max_velocity:",distance_at_max_velocity)
+        
         if distance_at_max_velocity > 0:
             total_time = 2 * time_to_max_velocity + distance_at_max_velocity / speed
         else:
             total_time = 2 * np.sqrt(max_joint_diff / acceleration)
 
+        print("total_time:",total_time)
+        
         # Calculate the number of steps based on the frame skip and simulation timestep
+        print('self.time_step', self.time_step)
         num_steps = int(total_time / self.time_step)
         num_steps = max(num_steps, 1)
         max_steps = num_steps * 2  # Set a maximum number of steps (2x the expected number)
+        
+        print("max_steps:",max_steps)
 
         # Generate smooth joint trajectories
         trajectories = []
         for i, diff in enumerate(joint_diffs):
             if abs(diff) > tolerance/4:
+                print('enter generate_smooth_trajectory')
                 trajectory = self.generate_smooth_trajectory(current_joints[i], target_joints[i], num_steps)
                 trajectories.append(trajectory)
             else:
                 trajectories.append(np.full(num_steps, current_joints[i]))
+        # print("trajectories:",trajectories)
+        # print("trajectories.shape:",np.array(trajectories).shape)
+
+            
         #TODO save orig other robot config
         for robot in self.env.robots_joint_pos.keys():
             if robot != robot_name:
@@ -104,6 +125,7 @@ class MotionExecutor:
         # Execute the trajectory
         for step in range(max_steps):
             if step < num_steps:
+                print('num step:', step)
                 target_positions = [traj[step] for traj in trajectories]
             else:
                 target_positions = target_joints
@@ -111,12 +133,18 @@ class MotionExecutor:
             actions = {robot: self.env.robots_joint_pos[robot] for robot in self.env.robots_joint_pos.keys() if
                        robot != robot_name}
             actions[robot_name] = target_positions
-            self.env.step(actions)
+            # print("actions:",actions)
+            
+            state = self.env.step(actions)
+            print('state in MoveJ:', state)
             self.env.set_robot_joints(robot_name=other_robot, joint_pos=other_robot_positions, simulate_step=False)
 
             # Check if we've reached the target joints
             current_joints = self.env.robots_joint_pos[robot_name]
+            print('current_joints after step:', current_joints)
+            print("target_joints:", target_joints)
             if np.allclose(current_joints, target_joints, atol=tolerance):
+                print('got to the point')
                 break
 
         self.update_all_robots_configs_in_mp()
@@ -405,22 +433,27 @@ class MotionExecutor:
                                                     acceleration=4.,
                                                     blend_radius=0.05,
                                                     tolerance=0.03, )
+        print('res:', res)
         if not res:
             return False
 
         above_block_config = self.env.robots_joint_pos[agent]
 
-        self.moveL(agent,
-                   (x, y, start_height-0.1),
+        res_moveL = self.moveL(agent,
+                   (x, y, start_height-0.05),
                    speed=2.,
                    tolerance=0.003,
                    max_steps=400)
         self.wait(20)
+        print('res_moveL:', res_moveL)
+
         _ = self.activate_grasp()
+
         self.wait(5)
         self.moveJ(agent, above_block_config, speed=4., acceleration=4., tolerance=0.1)
 
         object_grasped = self.env.is_object_grasped()
+        print('object_grasped:', object_grasped)
         if not object_grasped:
             self.deactivate_grasp()
 

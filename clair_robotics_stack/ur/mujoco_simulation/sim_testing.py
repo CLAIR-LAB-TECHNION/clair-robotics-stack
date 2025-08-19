@@ -1,5 +1,5 @@
-from mujoco_simulation.mujoco_env.sim_env import SimEnv
-from mujoco_simulation.motion_planning.motion_executor import MotionExecutor
+from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.sim_env import SimEnv
+from clair_robotics_stack.ur.mujoco_simulation.motion_planning.motion_executor import MotionExecutor
 
 import mediapy as media
 from PIL import Image
@@ -22,7 +22,7 @@ block_position = [
 
 # Create the simulation environment and the executor
 print("declaretion of env")
-render_mode = 'depth_array'
+render_mode = 'rgb_array'
 env = SimEnv(render_mode=render_mode)
 print("declaretion of executor")
 executor = MotionExecutor(env)
@@ -60,7 +60,8 @@ executor.put_down("ur5e_2", -0.7, -0.6, 0.20)
 frames.append(env.render())
 
 print('here')
-print('frames shape:', np.array(frames).shape)
+print('frames:', frames)
+# print('frames shape:', np.array(frames).shape)
 print('here2')
 framerate = 60
 print('here3')
