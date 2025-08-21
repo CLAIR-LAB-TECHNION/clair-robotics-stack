@@ -92,13 +92,13 @@ class SimEnv:
     def step(self, target_joint_pos, gripper_closed=None):
         # if reset_pid:
         #    ( self._pid_controller.reset_endpoint(target_joint_pos)
-        print('start time of step:', time.time())
+        # print('start time of step:', time.time())
         if gripper_closed is None:
             gripper_closed = self.gripper_state_closed
         self.gripper_state_closed = gripper_closed
 
         self._env_step(target_joint_pos)
-        print('self.robots_joint_pos in step:', self.robots_joint_pos)
+        # print('self.robots_joint_pos in step:', self.robots_joint_pos)
 
         self._clip_joint_velocities()
 
@@ -108,16 +108,16 @@ class SimEnv:
                 self._grasp_manager.update_grasped_object_pose()
             else:
                 is_close_enough = self._grasp_manager.grasp_block_if_close_enough()
-                print('is_close_enough:', is_close_enough)
+                # print('is_close_enough:', is_close_enough)
         else:
-            print('gripper is not closed, releasing object')
+            # print('gripper is not closed, releasing object')
             self._grasp_manager.release_object()
 
         if self.render_mode == "human":
             self._env.render()
 
         state = self.get_state()
-        print('state in end of step:', state)
+        # print('state in end of step:', state)
         return self.get_state()
 
     def simulate_steps(self, n_steps):

@@ -145,6 +145,7 @@ class MotionExecutor:
             # print("target_joints:", target_joints)
             if np.allclose(current_joints, target_joints, atol=tolerance):
                 print('got to the point')
+                print('allclose in num_step:', step)
                 break
 
         self.update_all_robots_configs_in_mp()
@@ -440,7 +441,7 @@ class MotionExecutor:
         above_block_config = self.env.robots_joint_pos[agent]
 
         res_moveL = self.moveL(agent,
-                   (x, y, start_height-0.05),
+                   (x, y, start_height-0.1),
                    speed=2.,
                    tolerance=0.003,
                    max_steps=400)
