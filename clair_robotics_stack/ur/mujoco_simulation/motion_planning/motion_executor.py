@@ -125,7 +125,7 @@ class MotionExecutor:
         # Execute the trajectory
         for step in range(max_steps):
             if step < num_steps:
-                print('num step:', step)
+                # print('num step:', step)
                 target_positions = [traj[step] for traj in trajectories]
             else:
                 target_positions = target_joints
@@ -136,13 +136,13 @@ class MotionExecutor:
             # print("actions:",actions)
             
             state = self.env.step(actions)
-            print('state in MoveJ:', state)
+            # print('state in MoveJ:', state)
             self.env.set_robot_joints(robot_name=other_robot, joint_pos=other_robot_positions, simulate_step=False)
 
             # Check if we've reached the target joints
             current_joints = self.env.robots_joint_pos[robot_name]
-            print('current_joints after step:', current_joints)
-            print("target_joints:", target_joints)
+            # print('current_joints after step:', current_joints)
+            # print("target_joints:", target_joints)
             if np.allclose(current_joints, target_joints, atol=tolerance):
                 print('got to the point')
                 break
