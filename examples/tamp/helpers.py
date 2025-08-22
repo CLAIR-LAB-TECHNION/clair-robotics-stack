@@ -434,7 +434,7 @@ class SimulationMotionExecutor(ActionExecuter):
             "ur5e_2",
             block_pos[0],
             block_pos[1],
-            start_height=0.2,
+            start_height=0.15,
         )
 
         # return True  #TODO return False if failed

@@ -136,13 +136,13 @@ class SimEnv:
             self.renderer.update_scene(self._mj_data, "robot-cam")
             print("self.renderer._depth_rendering 128:",self.renderer._depth_rendering)
             rgb = self.renderer.render()
-            # self.renderer.enable_depth_rendering()
-            # depth = self.renderer.render()
-            # self.renderer.disable_depth_rendering()
-            # print("rgb shape:", rgb.shape)
-            # print("depth shape:", depth.shape)
-            # return rgb, depth
-            return rgb
+            self.renderer.enable_depth_rendering()
+            depth = self.renderer.render()
+            self.renderer.disable_depth_rendering()
+            print("rgb shape:", rgb.shape)
+            print("depth shape:", depth.shape)
+            return rgb, depth
+            # return rgb
         elif self.render_mode == "depth_array":
             self._mj_data = self._env.sim.data
             self.renderer.update_scene(self._mj_data, "robot-cam")

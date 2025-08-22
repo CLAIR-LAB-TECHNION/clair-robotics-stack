@@ -31,8 +31,8 @@ class OffscreenRenderer:
             segmentation = self.renderer.render()
             return segmentation
         else:
-            # return rgb, depth
-            return rgb
+            return rgb, depth
+            # return rgb
 
     def close(self):
         # No need to explicitly close the renderer in newer MuJoCo versions

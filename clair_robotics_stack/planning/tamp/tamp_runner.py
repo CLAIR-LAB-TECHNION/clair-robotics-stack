@@ -126,6 +126,7 @@ class TAMPRunner:
 
             # apply action
             suc = self.apply_action(action)
+            print('action applied, suc:', suc)
             if not suc:
                 failures_count += 1
                 continue
