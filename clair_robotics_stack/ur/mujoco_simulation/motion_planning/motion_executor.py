@@ -63,7 +63,7 @@ class MotionExecutor:
         print('state in update_all_robots_configs_in_mp:', state)
         for robot, pose in state['robots_joint_pos'].items():
             self.motion_planner.update_robot_config(robot, pose)
-        print('state after:', state)
+        print('state after:', self.env.get_state())
         
 
     def moveJ(self, robot_name, target_joints, speed=1.0, acceleration=1.0, tolerance=0.003):
@@ -146,6 +146,8 @@ class MotionExecutor:
             if np.allclose(current_joints, target_joints, atol=tolerance):
                 print('got to the point')
                 print('allclose in num_step:', step)
+                print("current_joints in allclose:",current_joints)
+                print('target_joints in allclose:', target_joints)
                 break
 
         self.update_all_robots_configs_in_mp()
@@ -382,6 +384,7 @@ class MotionExecutor:
 
     def activate_grasp(self, wait_steps=5, render_freq=8):
         self.env.set_gripper(True)
+        print(self.env._grasp_manager.attached_object_name)
         self.motion_planner.attach_box_to_ee()
         return self.wait(wait_steps, render_freq=render_freq)
 
@@ -433,8 +436,8 @@ class MotionExecutor:
                                                     speed=4.,
                                                     acceleration=4.,
                                                     blend_radius=0.05,
-                                                    tolerance=0.03, )
-        print('res:', res)
+                                                    tolerance=0.1, )
+        print('res in pick_up:', res)
         if not res:
             return False
 
@@ -446,7 +449,7 @@ class MotionExecutor:
                    tolerance=0.003,
                    max_steps=400)
         self.wait(20)
-        print('res_moveL:', res_moveL)
+        print('res_moveL in pick_up:', res_moveL)
 
         _ = self.activate_grasp()
 
@@ -460,9 +463,12 @@ class MotionExecutor:
 
         return object_grasped
 
+
     def put_down(self, agent, x, y, start_height=0.15):
         release_height = self.env.get_tower_height_at_point((x, y)) + 0.04 + 0.025
+        print('release_height in put down:', release_height)
         start_height = max(start_height, release_height + 0.05)
+        print('start_height in put down:', start_height)
 
         logging.info(f"put down block at {x, y} start_height {start_height}")
 
@@ -471,21 +477,34 @@ class MotionExecutor:
                                                     speed=4.,
                                                     acceleration=4.,
                                                     blend_radius=0.05,
-                                                    tolerance=0.03, )
+                                                    tolerance=0.03)
+        print('res in put_down in executer:', res)
         if not res:
             return False
 
         above_block_config = self.env.robots_joint_pos[agent]
+        # print('above_block_config in put_down:', above_block_config)
+        # above_block_config = [ 1.12498883,-1.41455511 ,2.2734322  , 3.85744817 ,-1.57079541 ,-0.44585743]
+        print('above_block_config in put_down:', above_block_config)
 
-        self.moveL(agent,
-                   (x, y, release_height),
+        res_moveL = self.moveL(agent,
+                   (x, y, start_height-0.1),
                    speed=2.,
                    tolerance=0.003,
                    max_steps=400)
+        
+        print('res_moveL in put_down:', res_moveL)
         self.wait(20)
         _ = self.deactivate_grasp()
         self.wait(20)
+
         self.moveJ(agent, above_block_config, speed=4., acceleration=4., tolerance=0.1)
+
+        object_grasped = self.env.is_object_grasped()
+        print('object_grasped in put_down:', object_grasped)
+
+        return not object_grasped
+
 
     def sense_for_block(self, agent, x, y, start_height=0.15):
         logging.info(f"sense for block at {x, y} start_height {start_height}")

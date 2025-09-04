@@ -66,6 +66,6 @@ class GraspManager:
         # add shift to target position to make sure object is a bit below end effector, but in ee frame
         target_position_in_ee = np.array([0, 0, grasp_offset])
         target_position = target_position + self._ee_mj_data.xmat.reshape(3, 3) @ target_position_in_ee
-        print('self.attached_object_name:', self.attached_object_name)
+        # print('self.attached_object_name:', self.attached_object_name)
         self.object_manager.set_object_pose(self.attached_object_name, target_position, target_orientation)
         self.object_manager.set_object_vel(self.attached_object_name, target_velocities)

@@ -35,29 +35,29 @@ move_to = [1.305356658502026, -0.7908733209856437, 1.4010098471710881, 4.1022514
 executor.moveJ("ur5e_2", move_to)
 frames.append(env.render())
 
-executor.pick_up("ur5e_2", -0.7, -0.6, 0.15)
-frames.append(env.render())
-
-executor.plan_and_move_to_xyz_facing_down("ur5e_2", [-0.7, -0.7, 0.15])
-frames.append(env.render())
-
-executor.put_down("ur5e_2", -0.7, -0.7, 0.20)
-frames.append(env.render())
-
-executor.plan_and_move_to_xyz_facing_down("ur5e_2", [-0.7, -0.8, 0.15])
-frames.append(env.render())
-
 executor.pick_up("ur5e_2", -0.7, -0.8, 0.15)
 frames.append(env.render())
 
-executor.plan_and_move_to_xyz_facing_down("ur5e_2", [-0.7, -0.8, 0.25])
+# executor.plan_and_move_to_xyz_facing_down("ur5e_2", [-0.7, -0.7, 0.15])
+# frames.append(env.render())
+
+executor.put_down("ur5e_2", -0.7, -0.9, 0.20)
 frames.append(env.render())
 
-executor.plan_and_move_to_xyz_facing_down("ur5e_2", [-0.7, -0.6, 0.15])
-frames.append(env.render())
+# executor.plan_and_move_to_xyz_facing_down("ur5e_2", [-0.7, -0.8, 0.15])
+# frames.append(env.render())
 
-executor.put_down("ur5e_2", -0.7, -0.6, 0.20)
-frames.append(env.render())
+# executor.pick_up("ur5e_2", -0.7, -0.8, 0.15)
+# frames.append(env.render())
+
+# executor.plan_and_move_to_xyz_facing_down("ur5e_2", [-0.7, -0.8, 0.25])
+# frames.append(env.render())
+
+# executor.plan_and_move_to_xyz_facing_down("ur5e_2", [-0.7, -0.6, 0.15])
+# frames.append(env.render())
+
+# executor.put_down("ur5e_2", -0.7, -0.6, 0.20)
+# frames.append(env.render())
 
 print('here')
 # print('frames:', frames)

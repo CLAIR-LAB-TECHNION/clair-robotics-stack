@@ -89,7 +89,7 @@ class TAMPRunner:
 
         self.cur_plan = None
 
-    def run_episode(self):
+    def run_episode(self, use_motion_state_from_env=False):
         ################
         # Episode Init #
         ################
@@ -97,7 +97,7 @@ class TAMPRunner:
         self.callbacks.on_episode_start()
 
         # perceive initial state
-        self.update_states()
+        self.update_states(use_motion_state_from_env)
 
         # init counters
         action_count = 0
@@ -132,7 +132,7 @@ class TAMPRunner:
                 continue
 
             # update task state
-            self.update_states()
+            self.update_states(use_motion_state_from_env)
 
             if self.problem_sim.is_goal(self.cur_task_state):
                 print("predicting goal reached")
@@ -142,7 +142,7 @@ class TAMPRunner:
 
         self.callbacks.on_episode_end()
 
-    def update_states(self):
+    def update_states(self, use_motion_state_from_env=False):
         print('start update_states')
         #TODO: fix this so will work in both cases
         observations = self.sensor_fn()
@@ -151,15 +151,19 @@ class TAMPRunner:
         # print('observations', observations)
         #TODO: add calculation of motion_state
         if not 'SemanticEstimatorMultiImageRun' in str(type(self.state_estimator)):  
-            self.cur_task_state, self.cur_motion_state, _ = (
-                self.state_estimator.estimate_state(observations)
-            )
-            print('cur_task_state in update_states:', self.cur_task_state)
-            objects_positions_in_simEnv =  self.executer.motion_executer.env.get_block_positions_dict()
-            print('objects_positions_in_simEnv:', objects_positions_in_simEnv)
-            self.cur_motion_state = objects_positions_in_simEnv
-            print('cur_motion_state in update_states:', self.cur_motion_state)
-            # print('cur_motion_state in update_states:', self.cur_motion_state)
+            if not use_motion_state_from_env:
+                self.cur_task_state, self.cur_motion_state, _ = (
+                    self.state_estimator.estimate_state(observations)
+                )
+            else:
+                print('using motion_state_from_env')
+                objects_positions_in_simEnv =  self.executer.motion_executer.env.get_block_positions_dict()
+                print('objects_positions_in_simEnv:', objects_positions_in_simEnv)
+                self.cur_motion_state = objects_positions_in_simEnv
+                print('cur_motion_state in update_states:', self.cur_motion_state)
+                self.cur_task_state = self.state_estimator._estimate_task_state(self.cur_motion_state)
+                print('cur_task_state in update_states:', self.cur_task_state)
+                # print('cur_motion_state in update_states:', self.cur_motion_state)
         else:
             rgb, depth = observations["rgb"], observations["depth"]
             # pil_rgb = [Image.fromarray(r) for r in rgb]

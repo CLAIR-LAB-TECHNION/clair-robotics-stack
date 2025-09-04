@@ -110,7 +110,7 @@ class PickPlaceStateEstimator(ThreeLayerStateEstimator):
         Convert motion state to task state using predicates from the PDDL domain.
         Task state is a dictionary of predicates and their values.
         """
-        print('motion_state from _estimate_task_state:', motion_state)
+        # print('motion_state from _estimate_task_state:', motion_state)
         task_state = {}
 
         # Get all blocks and locations from the motion state and predefined locations
@@ -242,9 +242,9 @@ class SimulationSensors:
         print(f"Saved rgb image to {full_path}") 
 
         depth_normalized = (out["depth"] - np.min(out["depth"])) / (np.max(out["depth"]) - np.min(out["depth"]))
-        plt.imsave(f'./depth_frames/{filename}.png', np.array(depth_normalized), cmap='gray')
+        plt.imsave(f'./depth_frames/{filename}', np.array(depth_normalized), cmap='gray')
 
-        print(f"Saved depth image to {filename}.png") 
+        print(f"Saved depth image to {filename}") 
 
         return out
 
@@ -259,6 +259,7 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         location_bounds,
         holding_height,
         detection_confidence_threshold=0.01,
+        
     ):
         super().__init__()
 
@@ -271,7 +272,7 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         self.location_bounds = location_bounds
         self.holding_height = holding_height
 
-        print('all_block_classes', all_block_classes)
+        # print('all_block_classes', all_block_classes)
 
         self.detector = ObjectDetection(
             all_block_classes, min_confidence=detection_confidence_threshold
@@ -327,11 +328,11 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
                 motion_state[block_name] = np.mean(potential_block_pos, axis=0)
 
         #TODO: remove when state estimator will be integrated
-        motion_state = {
-            'block0': [-0.7, -0.6, 0.03],
-            'block1': [-0.7, -0.7, 0.03],
-            'block2': [-0.7, -0.8, 0.03],
-        }
+        # motion_state = {
+        #     'block0': [-0.7, -0.6, 0.03],
+        #     'block1': [-0.7, -0.7, 0.03],
+        #     'block2': [-0.7, -0.8, 0.03],
+        # }
 
         return motion_state
 
@@ -345,6 +346,12 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         # Get all blocks and locations from the motion state and predefined locations
         blocks = list(self.block_classes.keys())
         locations = list(self.location_bounds.keys())
+
+        print('motion_state from _estimate_task_state:', motion_state)
+        print('blocks from _estimate_task_state:', blocks)
+        print('locations from _estimate_task_state:', locations)
+        
+
 
         # initial assumptions before checking predicates
         task_state["handempty()"] = True
@@ -418,6 +425,7 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         """Predicate: robot is holding the block"""
         if block not in motion_state:
             return False
+        print('motion_state[block][2]:', motion_state[block][2])
         return bool(motion_state[block][2] > self.holding_height)
 
 
@@ -443,14 +451,23 @@ class SimulationMotionExecutor(ActionExecuter):
 
     def put_down(self, b, l):
         #TODO: same as pick_up
-        print('put down entered')
+        # block_pos = self._motion_state[b]
+        # print('block_pos in put_down:', block_pos)
+        # res = self.motion_executer.put_down(
+        #     "ur5e_2",
+        #     block_pos[0],
+        #     block_pos[1],
+        #     start_height=0.15,
+        # )
+
         location_pos = self.location_centers[l]
-        res = self.motion_executer.put_down(
+        res =  self.motion_executer.put_down(
             "ur5e_2",
             location_pos[0],
             location_pos[1],
-            start_height=0.15,
+            start_height=0.10,
         )
 
         # return True  #TODO return False if failed
+        print('res in put_down:', res)
         return res

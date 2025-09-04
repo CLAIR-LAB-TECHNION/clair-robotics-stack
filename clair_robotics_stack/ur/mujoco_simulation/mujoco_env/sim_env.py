@@ -104,7 +104,7 @@ class SimEnv:
 
         if gripper_closed:
             if self._grasp_manager.attached_object_name is not None:
-                print('gripper is closed. updates grasped_object_pose')
+                # print('gripper is closed. updates grasped_object_pose')
                 self._grasp_manager.update_grasped_object_pose()
             else:
                 is_close_enough = self._grasp_manager.grasp_block_if_close_enough()
@@ -139,8 +139,8 @@ class SimEnv:
             self.renderer.enable_depth_rendering()
             depth = self.renderer.render()
             self.renderer.disable_depth_rendering()
-            print("rgb shape:", rgb.shape)
-            print("depth shape:", depth.shape)
+            # print("rgb shape:", rgb.shape)
+            # print("depth shape:", depth.shape)
             return rgb, depth
             # return rgb
         elif self.render_mode == "depth_array":

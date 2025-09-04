@@ -41,19 +41,24 @@ class ActionExecuter(ABC):
         """
         # replace PDDL legal hyphens to python legal underscores
         action = action.replace("-", "_")
+        print("Executing action:", action, "with parameters:", parameters)
 
         # get skill function from class attributes
         try:
             skill = getattr(self, action)
+            print('skill: ', skill)
         except AttributeError:
             raise AttributeError(
                 f"action mapper {self.__class__.__name__} does not support action '{action}'"
             )
         
         self._motion_state = motion_state
+        print('motion_state in executer: ', motion_state)
 
         # execute skill and return success
-        return skill(*parameters)
+        res = skill(*parameters)
+        print('final res in execute_action: ', res)
+        return res
 
 
 def check_actions_compatibility(problem, action_executer):

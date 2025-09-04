@@ -42,11 +42,18 @@ CAMERA_ROBOT_CONFIG = [
 ]
 
 # TODO fill out appropriate bounds
+# LOCATION_BOUNDS = {
+#     "pos1": ([-0.55, -0.85, -0.1], [-0.45, -0.75, 0.05]),
+#     "pos2": ([-0.55, -0.65, -0.1], [-0.45, -0.55, 0.05]),
+#     "pos3": ([-0.65, -0.85, -0.1], [-0.55, -0.75, 0.05]),
+#     "pos4": ([-0.45, -0.85, -0.1], [-0.35, -0.75, 0.05]),
+# }
+
 LOCATION_BOUNDS = {
-    "pos1": ([-0.75, -0.65, -0.1], [-0.65, -0.55, 0.1]),
-    "pos2": ([-0.75, -0.75, -0.1], [-0.65, -0.65, 0.1]),
-    "pos3": ([-0.75, -0.85, -0.1], [-0.65, -0.75, 0.1]),
-    "pos4": ([-0.75, -0.35, -0.1], [-0.71, -0.25, 0.1]),
+    "pos1": ([-0.75, -0.65, -0.1], [-0.65, -0.55, 0.05]),
+    "pos2": ([-0.75, -0.75, -0.1], [-0.65, -0.65, 0.05]),
+    "pos3": ([-0.75, -0.85, -0.1], [-0.65, -0.75, 0.05]),
+    "pos4": ([-0.75, -0.95, -0.1], [-0.65, -0.85, 0.05]),
 }
 
 LOCATION_CENTERS = {
@@ -56,7 +63,7 @@ LOCATION_CENTERS = {
 DEFAULT_BLOCK_CLASSES = ["cube", "block", "box","rectangle", "wooden cube", "wooden block", "wooden box", "wooden rectangle"]
 
 # TODO figure out holding height
-HOLDING_HEIGHT = 0.15
+HOLDING_HEIGHT = 0.06
 
 
 class PickPlaceTampCallbacks(TAMPRunnerCallbacks):
@@ -92,7 +99,7 @@ class PickPlaceTampCallbacks(TAMPRunnerCallbacks):
         print("Episode ended")
 
 
-def main(use_simulation):
+def main(use_simulation, use_s3e, use_motion_state_from_env):
     if not use_simulation:
         print("here")
         problem = create_up_problem(DOMAIN_FILE, PROBLEM_FILE)
@@ -136,13 +143,16 @@ def main(use_simulation):
             for block_name in block_names
         }
         print('declaration of state_estimator')
-        state_estimator = SimulationStateEstimator(problem, block_classes, LOCATION_BOUNDS, HOLDING_HEIGHT,
-            detection_confidence_threshold=0.05)
+        if not use_s3e:
+            print('not use_s3e')
+            state_estimator = SimulationStateEstimator(problem, block_classes, LOCATION_BOUNDS, HOLDING_HEIGHT,
+                detection_confidence_threshold=0.05)
         
-        # state_estimator = SemanticEstimatorMultiImageRun(domain=DOMAIN_FILE, \
-        #                                                  problem=PROBLEM_SIM_FILE, 
-        #                                                  nl_converter_model_id="meta-llama/Meta-Llama-3-8B-Instruct",
-        #                                                  vqa_model_id='lmms-lab/llava-onevision-qwen2-0.5b-ov')
+        else:
+            state_estimator = SemanticEstimatorMultiImageRun(domain=DOMAIN_FILE, \
+                                                         problem=PROBLEM_SIM_FILE, 
+                                                         nl_converter_model_id="meta-llama/Meta-Llama-3-8B-Instruct",
+                                                         vqa_model_id='lmms-lab/llava-onevision-qwen2-0.5b-ov')
 
 
         # rgb_path = "./clair_robotics_stack/ur/rgb_frames"
@@ -179,10 +189,12 @@ def main(use_simulation):
             sensor_fn=sensor_fn,
             callbacks=callbacks,
         )
-        runner.run_episode()
+        runner.run_episode(use_motion_state_from_env=use_motion_state_from_env)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Boolean argument example")
     parser.add_argument('--use_simulation', action='store_true', help="Enable debug mode")
+    parser.add_argument('--use_s3e', action='store_true', help="Enable debug mode")
+    parser.add_argument('--use_motion_state_from_env', action='store_true', help="Enable debug mode")
     args = parser.parse_args()
-    main(args.use_simulation)
+    main(args.use_simulation, args.use_s3e, args.use_motion_state_from_env)
