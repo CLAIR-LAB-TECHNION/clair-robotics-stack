@@ -21,10 +21,10 @@
 
   (:goal
     (and
-      (at can pos2)
-      (at block0 pos4)
-      (at block1 pos5)
-      (at block2 pos3)
+      (at can pos5)
+      (at block0 pos2)
+      (at block1 pos3)
+      (at block2 pos4)
     )
   )
 )

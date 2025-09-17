@@ -27,15 +27,15 @@ from semantic_state_estimator.semantic_state_estimator import SemanticEstimatorM
 
 import cv2
 
-DOMAIN_FILE = "./examples/tamp/domain.pddl"
+# DOMAIN_FILE = "./examples/tamp/domain.pddl"
 # PROBLEM_FILE = "./examples/tamp/problem.pddl"
-PROBLEM_FILE = './examples/tamp/problem_sim.pddl'
+# PROBLEM_FILE = './examples/tamp/problem_sim.pddl'
 # DOMAIN_FILE = "./examples/tamp/domain_with_costume.pddl"
 # PROBLEM_FILE = "./examples/tamp/problem_with_costume.pddl"
-# DOMAIN_FILE = "./examples/tamp/domain_for_s3e.pddl"
+DOMAIN_FILE = "./examples/tamp/domain_for_s3e.pddl"
 # PROBLEM_FILE = "./examples/tamp/problem_for_s3e.pddl"
 # DOMAIN_FILE = "./examples/tamp/domain_multitables.pddl"
-# PROBLEM_FILE = "./examples/tamp/problem_multitables.pddl"
+PROBLEM_FILE = "./examples/tamp/problem_multitables.pddl"
 
 # TODO configure camera pose
 CAMERA_ROBOT_CONFIG = [
@@ -49,20 +49,20 @@ CAMERA_ROBOT_CONFIG = [
 
 # TODO fill out appropriate bounds
 
-LOCATION_BOUNDS = {
-    "pos1": ([-0.75, -0.65, -0.1], [-0.65, -0.55, 0.05]),
-    "pos2": ([-0.75, -0.75, -0.1], [-0.65, -0.65, 0.05]),
-    # "pos2": ([-0.25, -0.35, -0.1], [-0.15, -0.25, 0.05]),
-    "pos3": ([-0.75, -0.85, -0.1], [-0.65, -0.75, 0.05]),
-    "pos4": ([-0.75, -0.95, -0.1], [-0.65, -0.85, 0.05]),
-    # "pos5": ([-0.75, -0.55, -0.1], [-0.65, -0.45, 0.05]), 
-}
-
 # LOCATION_BOUNDS = {
-#     "grey-table": ([-0.8, -0.95, -0.1], [-0.6, -0.55, 0.05]),
-#     # "blue-table": ([0.4, -0.95, -0.1], [0.3, -0.85, 0.05]),
-#     "blue-table": ([-0.25, -0.75, -0.1], [-0.15, -0.65, 0.05]),
+#     "pos1": ([-0.75, -0.65, -0.1], [-0.65, -0.55, 0.05]),
+#     "pos2": ([-0.75, -0.75, -0.1], [-0.65, -0.65, 0.05]),
+#     # "pos2": ([-0.25, -0.35, -0.1], [-0.15, -0.25, 0.05]),
+#     "pos3": ([-0.75, -0.85, -0.1], [-0.65, -0.75, 0.05]),
+#     "pos4": ([-0.75, -0.95, -0.1], [-0.65, -0.85, 0.05]),
+#     "pos5": ([-0.75, -0.55, -0.1], [-0.65, -0.45, 0.05]), 
 # }
+
+LOCATION_BOUNDS = {
+    "grey-table": ([-0.8, -0.95, -0.1], [-0.6, -0.55, 0.05]),
+    # "blue-table": ([0.4, -0.95, -0.1], [0.3, -0.85, 0.05]),
+    "blue-table": ([-0.25, -0.75, -0.1], [-0.15, -0.65, 0.05]),
+}
 
 LOCATION_CENTERS = {
     k: [(a + b) / 2 for a, b in zip(v[0], v[1])] for k, v in LOCATION_BOUNDS.items()

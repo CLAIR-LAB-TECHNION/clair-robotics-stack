@@ -25,6 +25,7 @@ import os
 
 from utils import find_next_filename
 import re
+from datetime import datetime
 
 
 class PickPlaceSensors:
@@ -227,6 +228,11 @@ class PickPlaceActionExecutor(ActionExecuter):
 class SimulationSensors:
     def __init__(self, env):
         self.env = env
+        self.folder_name = './runs/' + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        os.makedirs(self.folder_name, exist_ok=True)
+        os.makedirs(self.folder_name+'/rgb_frames/', exist_ok=True)
+        os.makedirs(self.folder_name+'/depth_frames/', exist_ok=True)
+
 
     def __call__(self) -> dict:
         # print('enter __call__')
@@ -236,14 +242,14 @@ class SimulationSensors:
         # print('out:', out)
 
         im = Image.fromarray(out["rgb"])
-        dir_path='./rgb_frames'
-        filename = find_next_filename(dir_path=dir_path)
-        full_path = os.path.join(dir_path, filename)
+        dir_path=self.folder_name
+        filename = find_next_filename(dir_path=dir_path+'/rgb_frames/')
+        full_path = os.path.join(dir_path, 'rgb_frames/' ,filename)
         im.save(full_path)
         # print(f"Saved rgb image to {full_path}") 
 
         depth_normalized = (out["depth"] - np.min(out["depth"])) / (np.max(out["depth"]) - np.min(out["depth"]))
-        plt.imsave(f'./depth_frames/{filename}', np.array(depth_normalized), cmap='gray')
+        plt.imsave(f'{dir_path}/depth_frames/{filename}', np.array(depth_normalized), cmap='gray')
 
         # print(f"Saved depth image to {filename}") 
 

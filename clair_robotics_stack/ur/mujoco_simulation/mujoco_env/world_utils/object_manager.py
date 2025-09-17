@@ -16,7 +16,7 @@ class ObjectManager:
         # print('all_joint_names:', all_joint_names)
 
         # all bodies that ends with "box"
-        prefixs = ("can", "block", "bread")
+        prefixs = ("can", "block", "bread", "lemon", "bottle", "milk", "cereal")
         self.object_names = [name for name in all_joint_names if name.startswith(prefixs)]
         self.objects_mjdata_dict = {name: self._mj_model.joint(name) for name in self.object_names}
         self.initial_positions_dict = self.get_all_block_positions()

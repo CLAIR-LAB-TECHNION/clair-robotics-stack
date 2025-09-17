@@ -99,7 +99,7 @@ class Simulator:
 
     def initialize(self) -> None:
         """Initialize the MJCF models for the scene and each robot."""
-        print('self.scene in initialize:', self.scene)
+        # print('self.scene in initialize:', self.scene)
         self.composer.set_base_scene(self.scene)
         for i, (robot_name, robot_spec) in enumerate(self.robots.items()):
             namespace = f"robot_{i}"

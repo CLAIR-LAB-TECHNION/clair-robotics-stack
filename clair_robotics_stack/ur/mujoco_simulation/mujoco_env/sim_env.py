@@ -11,13 +11,13 @@ from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.world_utils.configurat
 import time
 
 class SimEnv:
-    def __init__(self, render_mode='rgb_array', cfg=muj_env_config, render_sleep_to_maintain_fps=True):
+    def __init__(self, render_mode='rgb_array', cfg=muj_env_for_s3e_config, render_sleep_to_maintain_fps=True):
         print('start')
         self.render_mode = render_mode
         print('render_mode:', render_mode)
         self._env = MujocoEnv.from_cfg(cfg=cfg, render_mode=render_mode, frame_skip=frame_skip,
                                        sleep_to_maintain_fps=render_sleep_to_maintain_fps)
-        print('self._env:', self._env)
+        # print('self._env:', self._env)
         self.frame_skip = frame_skip
         obs, info = self._env.reset()  # once, for info, later again
         # print('info:', info)
