@@ -58,6 +58,7 @@ muj_env_with_costume_config = dict(
         resource='costume',
         render_camera='top-right',
         objects=ObjectSpec('can', base_joints=JointSpec('free'), base_pos=[-0.7, -0.6, 0.03]),
+        objects=ObjectSpec('can', base_joints=JointSpec('free'), base_pos=[-0.73, -0.6, 0.03]),
     ),
     robots=dict(
         ur5e_1=dict(
@@ -85,7 +86,6 @@ muj_env_with_costume_config = dict(
 
 muj_env_for_s3e_config = dict(
     scene=dict(
-        resource='s3e',
         resource='s3e',
         render_camera='top-right',
         objects=(
