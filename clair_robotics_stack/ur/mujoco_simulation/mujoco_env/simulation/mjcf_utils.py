@@ -11,6 +11,7 @@ from ..common import FilePath
 from ..episode.specs.addon_spec import AddonSpec
 from ..episode.specs.joint_spec import JointSpec, ActuatorSpec
 
+
 __all__ = [
     'load_mjcf',
     'physics_from_mjcf_model',
@@ -102,9 +103,14 @@ def attach_addon(addon: AddonSpec, attachable: Attacchable):
     """
     # load addon MJCF asset files
     addon_mjcf = load_mjcf(addon.resource)
-
+    # print('addon_mjcf before attach:',addon_mjcf.to_xml_string())
+    # print('attachable:', attachable)
+    # print('addon:', addon)
     # attach addon to attachable parent
     attach_mjcf(addon_mjcf, attachable, addon)
+    # print('addon_mjcf after attach:', addon_mjcf.to_xml_string())
+
+
 
     return addon_mjcf
 

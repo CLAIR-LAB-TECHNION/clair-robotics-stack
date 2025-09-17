@@ -86,6 +86,8 @@ class MJCFComposer:
         # update stores
         self._objects = {spec: mjcf_obj for spec, mjcf_obj in zip(base_scene.objects, mjcf_objects)}
 
+        # print('self._objects in set_base_scene:', self._objects)
+
     def attach_object(self, spec: ObjectSpec):
         """
         attach an object to the scene according to the provided specification.

@@ -46,18 +46,18 @@ class ActionExecuter(ABC):
         # get skill function from class attributes
         try:
             skill = getattr(self, action)
-            print('skill: ', skill)
+            # print('skill: ', skill)
         except AttributeError:
             raise AttributeError(
                 f"action mapper {self.__class__.__name__} does not support action '{action}'"
             )
         
         self._motion_state = motion_state
-        print('motion_state in executer: ', motion_state)
+        # print('motion_state in executer: ', motion_state)
 
         # execute skill and return success
         res = skill(*parameters)
-        print('final res in execute_action: ', res)
+        # print('final res in execute_action: ', res)
         return res
 
 

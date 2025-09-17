@@ -49,13 +49,19 @@ def task_spec_from_name_or_cfg(asset_or_cfg: AssetOrConfig) -> TaskSpec:
 
 def __list_or_single_from_name_or_cfg(asset_or_cfg: Union[AssetOrConfig, list[AssetOrConfig]],
                                       spec_type: type[SpecT]) -> list[SpecT]:
-    if isinstance(asset_or_cfg, list):
+    # print('asset_or_cfg in __list_or_single_from_name_or_cfg:', asset_or_cfg)
+    # print('type:', type(asset_or_cfg))
+    # if isinstance(asset_or_cfg, list):
+    if isinstance(asset_or_cfg, (list, tuple)):
         return [__type_from_name_or_cfg(data, spec_type) for data in asset_or_cfg]
     else:
         return [__type_from_name_or_cfg(asset_or_cfg, spec_type)]
 
 
 def __type_from_name_or_cfg(inp: AssetOrConfig | SpecT, spec_cls: type[SpecT]) -> SpecT:
+    # print('inp:', inp)
+    # print('type(inp):', type(inp))
+    # print('spec_cls:', spec_cls)
     if isinstance(inp, spec_cls):
         return inp
     if isinstance(inp, dict):

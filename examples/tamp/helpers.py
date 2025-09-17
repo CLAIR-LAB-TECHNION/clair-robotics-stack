@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 import os
 
 from utils import find_next_filename
+import re
 
 
 class PickPlaceSensors:
@@ -228,7 +229,7 @@ class SimulationSensors:
         self.env = env
 
     def __call__(self) -> dict:
-        print('enter __call__')
+        # print('enter __call__')
         out = {}
         out["rgb"], out["depth"] = self.env.render()
 
@@ -239,12 +240,12 @@ class SimulationSensors:
         filename = find_next_filename(dir_path=dir_path)
         full_path = os.path.join(dir_path, filename)
         im.save(full_path)
-        print(f"Saved rgb image to {full_path}") 
+        # print(f"Saved rgb image to {full_path}") 
 
         depth_normalized = (out["depth"] - np.min(out["depth"])) / (np.max(out["depth"]) - np.min(out["depth"]))
         plt.imsave(f'./depth_frames/{filename}', np.array(depth_normalized), cmap='gray')
 
-        print(f"Saved depth image to {filename}") 
+        # print(f"Saved depth image to {filename}") 
 
         return out
 
@@ -253,8 +254,6 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
     def __init__(
         self,
         up_problem,
-        # camera_robot_ip,
-        # camera_config,
         block_classes,
         location_bounds,
         holding_height,
@@ -264,15 +263,12 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         super().__init__()
 
         self.up_problem = up_problem
-        # self.cam_bot = RobotInterfaceWithMP.build_from_robot_name_and_ip(camera_robot_ip, 'ur5e_1')
 
         self.block_classes = block_classes
         all_block_classes = [b for bs in block_classes.values() for b in bs]
 
         self.location_bounds = location_bounds
         self.holding_height = holding_height
-
-        # print('all_block_classes', all_block_classes)
 
         self.detector = ObjectDetection(
             all_block_classes, min_confidence=detection_confidence_threshold
@@ -347,9 +343,9 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         blocks = list(self.block_classes.keys())
         locations = list(self.location_bounds.keys())
 
-        print('motion_state from _estimate_task_state:', motion_state)
-        print('blocks from _estimate_task_state:', blocks)
-        print('locations from _estimate_task_state:', locations)
+        # print('motion_state from _estimate_task_state:', motion_state)
+        # print('blocks from _estimate_task_state:', blocks)
+        # print('locations from _estimate_task_state:', locations)
         
 
 
@@ -425,7 +421,7 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         """Predicate: robot is holding the block"""
         if block not in motion_state:
             return False
-        print('motion_state[block][2]:', motion_state[block][2])
+        # print('motion_state[block][2]:', motion_state[block][2])
         return bool(motion_state[block][2] > self.holding_height)
 
 
@@ -437,7 +433,7 @@ class SimulationMotionExecutor(ActionExecuter):
 
     def pick_up(self, b, l):
         block_pos = self._motion_state[b]
-        print('block_pos in pick_up:', block_pos)
+        # print('block_pos in pick_up:', block_pos)
         res = self.motion_executer.pick_up(
             "ur5e_2",
             block_pos[0],
@@ -469,5 +465,5 @@ class SimulationMotionExecutor(ActionExecuter):
         )
 
         # return True  #TODO return False if failed
-        print('res in put_down:', res)
+        # print('res in put_down:', res)
         return res

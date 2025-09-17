@@ -24,6 +24,7 @@ block_position = [
 print("declaretion of env")
 render_mode = 'rgb_array'
 env = SimEnv(render_mode=render_mode)
+print('env:', env)
 print("declaretion of executor")
 executor = MotionExecutor(env)
 

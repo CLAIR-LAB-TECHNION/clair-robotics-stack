@@ -22,9 +22,9 @@ class GraspManager:
         find the nearest object and grasp it if it is close enough
         """
         object_positions = [self.object_manager.get_object_pos(name) for name in self.graspable_objects_names]
-        print("object_positions in grasp_block_if_close_enough:", object_positions)
+        # print("object_positions in grasp_block_if_close_enough:", object_positions)
         gripper_position = self._ee_mj_data.xpos
-        print("gripper_position in grasp_block_if_close_enough:", gripper_position)
+        # print("gripper_position in grasp_block_if_close_enough:", gripper_position)
 
 
         # a block is grasped if distance in x and distance in y are less than 0.015 and in z less than 0.03
@@ -41,7 +41,7 @@ class GraspManager:
         """
         attatch this object to the gripper position
         """
-        print('entered grasp_object')
+        # print('entered grasp_object')
         self.attached_object_name = object_name
         self.update_grasped_object_pose()
 

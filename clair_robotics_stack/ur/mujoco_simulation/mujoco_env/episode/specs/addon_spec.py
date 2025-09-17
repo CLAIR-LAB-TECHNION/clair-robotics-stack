@@ -37,6 +37,7 @@ class AddonSpec(AssetSpec, ABC):
     base_joints: Sequence[JointSpec] = tuple()
 
     def __post_init__(self):
+        # print('self in AddonSpec:', self)
         super().__post_init__()
 
         # set base position and rotation to a numpy array
@@ -115,6 +116,7 @@ class InitStateAddonSpec(AddonSpec, ABC):
     init_vel: Optional[Vector] = None
 
     def __post_init__(self):
+        # print('self in InitStateAddonSpec:', self)
         super().__post_init__()
 
         # set initial position and velocity to a numpy array

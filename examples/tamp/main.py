@@ -28,8 +28,14 @@ from semantic_state_estimator.semantic_state_estimator import SemanticEstimatorM
 import cv2
 
 DOMAIN_FILE = "./examples/tamp/domain.pddl"
-PROBLEM_FILE = "./examples/tamp/problem.pddl"
-PROBLEM_SIM_FILE = './examples/tamp/problem_sim.pddl'
+# PROBLEM_FILE = "./examples/tamp/problem.pddl"
+PROBLEM_FILE = './examples/tamp/problem_sim.pddl'
+# DOMAIN_FILE = "./examples/tamp/domain_with_costume.pddl"
+# PROBLEM_FILE = "./examples/tamp/problem_with_costume.pddl"
+# DOMAIN_FILE = "./examples/tamp/domain_for_s3e.pddl"
+# PROBLEM_FILE = "./examples/tamp/problem_for_s3e.pddl"
+# DOMAIN_FILE = "./examples/tamp/domain_multitables.pddl"
+# PROBLEM_FILE = "./examples/tamp/problem_multitables.pddl"
 
 # TODO configure camera pose
 CAMERA_ROBOT_CONFIG = [
@@ -42,19 +48,21 @@ CAMERA_ROBOT_CONFIG = [
 ]
 
 # TODO fill out appropriate bounds
-# LOCATION_BOUNDS = {
-#     "pos1": ([-0.55, -0.85, -0.1], [-0.45, -0.75, 0.05]),
-#     "pos2": ([-0.55, -0.65, -0.1], [-0.45, -0.55, 0.05]),
-#     "pos3": ([-0.65, -0.85, -0.1], [-0.55, -0.75, 0.05]),
-#     "pos4": ([-0.45, -0.85, -0.1], [-0.35, -0.75, 0.05]),
-# }
 
 LOCATION_BOUNDS = {
     "pos1": ([-0.75, -0.65, -0.1], [-0.65, -0.55, 0.05]),
     "pos2": ([-0.75, -0.75, -0.1], [-0.65, -0.65, 0.05]),
+    # "pos2": ([-0.25, -0.35, -0.1], [-0.15, -0.25, 0.05]),
     "pos3": ([-0.75, -0.85, -0.1], [-0.65, -0.75, 0.05]),
     "pos4": ([-0.75, -0.95, -0.1], [-0.65, -0.85, 0.05]),
+    # "pos5": ([-0.75, -0.55, -0.1], [-0.65, -0.45, 0.05]), 
 }
+
+# LOCATION_BOUNDS = {
+#     "grey-table": ([-0.8, -0.95, -0.1], [-0.6, -0.55, 0.05]),
+#     # "blue-table": ([0.4, -0.95, -0.1], [0.3, -0.85, 0.05]),
+#     "blue-table": ([-0.25, -0.75, -0.1], [-0.15, -0.65, 0.05]),
+# }
 
 LOCATION_CENTERS = {
     k: [(a + b) / 2 for a, b in zip(v[0], v[1])] for k, v in LOCATION_BOUNDS.items()
@@ -76,15 +84,15 @@ class PickPlaceTampCallbacks(TAMPRunnerCallbacks):
 
     def on_state_update(self, observations):
         print("State updated")
-        print("observations['rgb'].shape:", observations['rgb'].shape)
+        # print("observations['rgb'].shape:", observations['rgb'].shape)
         if self.se_type:
             det_res = self.runner.state_estimator.detector.detect_objects([observations["rgb"]])[-1][0]
             # plt.figure()
             out = self.runner.state_estimator.detector.get_annotated_images(det_res)
             # plt.imshow(out)
             # plt.show()
-        print("task_state from on_state_update:\n", self.runner.cur_task_state)
-        print("motion_state from on_state_update:\n", self.runner.cur_motion_state)
+        # print("task_state from on_state_update:\n", self.runner.cur_task_state)
+        # print("motion_state from on_state_update:\n", self.runner.cur_motion_state)
 
     def on_replan(self):
         print("Replanning")
@@ -130,14 +138,15 @@ def main(use_simulation, use_s3e, use_motion_state_from_env):
     else:
         #TODO: add usage in executer and planner for the mujoco simulation
         print("Simulation mode is not implemented yet.")
-        problem = create_up_problem(DOMAIN_FILE, PROBLEM_SIM_FILE)
+        problem = create_up_problem(DOMAIN_FILE, PROBLEM_FILE)
         print('declaration of env')
         env = SimEnv()
         print('declaration of executor')
         motion_executer = MotionExecutor(env)
         executer = SimulationMotionExecutor(motion_executer, LOCATION_CENTERS)
-        print('declaration of block_names')
+        # print('declaration of block_names')
         block_names = get_object_names_dict(problem)['block']
+        # block_names = get_object_names_dict(problem)['item']
         block_classes = {
             block_name: [block_name + " " + s for s in DEFAULT_BLOCK_CLASSES]
             for block_name in block_names
@@ -150,33 +159,10 @@ def main(use_simulation, use_s3e, use_motion_state_from_env):
         
         else:
             state_estimator = SemanticEstimatorMultiImageRun(domain=DOMAIN_FILE, \
-                                                         problem=PROBLEM_SIM_FILE, 
+                                                         problem=PROBLEM_FILE, 
                                                          nl_converter_model_id="meta-llama/Meta-Llama-3-8B-Instruct",
                                                          vqa_model_id='lmms-lab/llava-onevision-qwen2-0.5b-ov')
 
-
-        # rgb_path = "./clair_robotics_stack/ur/rgb_frames"
-        # depth_path = "./clair_robotics_stack/ur/depth_frames" 
-        # rgb_images = []
-        # depth_images = []
-
-        # for rgb_frame in os.listdir(rgb_path):
-        #     # Load and upscale the image
-        #     image_path = os.path.join(rgb_path, rgb_frame)
-        #     rgb_image = cv2.imread(image_path)
-        #     rgb_images.append(rgb_image)
-
-        # for depth_frame in os.listdir(depth_path):
-        #     # Load and upscale the image
-        #     image_path = os.path.join(rgb_path, depth_frame)
-        #     depth_image = cv2.imread(image_path)
-        #     depth_images.append(depth_image)
-
-        # # sensor_fn = #TODO
-        # observations = {
-        #     "rgb": rgb_images,
-        #     "depth": depth_images
-        # }
 
         sensor_fn = SimulationSensors(env)
 

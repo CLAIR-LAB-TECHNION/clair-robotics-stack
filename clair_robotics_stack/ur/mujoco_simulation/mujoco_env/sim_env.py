@@ -20,6 +20,7 @@ class SimEnv:
         print('self._env:', self._env)
         self.frame_skip = frame_skip
         obs, info = self._env.reset()  # once, for info, later again
+        # print('info:', info)
         self._mj_model = info['privileged']['model']
         self._mj_data = info['privileged']['data']
         self._env_entities = {name: agent.entity for name, agent in self._env.agents.items()}
@@ -79,7 +80,7 @@ class SimEnv:
             self.robots_camera[agent] = [obs[agent]['camera'], obs[agent]['camera_pose']]
         self.gripper_state_closed = False
         self._grasp_manager.release_object()
-        print('block_positions: ', block_positions)
+        # print('block_positions: ', block_positions)
         self._object_manager.reset(randomize=randomize, block_positions=block_positions)
 
         self.step(self.robots_joint_pos, gripper_closed=False)
@@ -134,7 +135,7 @@ class SimEnv:
         elif self.render_mode == "rgb_array":
             self._mj_data = self._env.sim.data
             self.renderer.update_scene(self._mj_data, "robot-cam")
-            print("self.renderer._depth_rendering 128:",self.renderer._depth_rendering)
+            # print("self.renderer._depth_rendering 128:",self.renderer._depth_rendering)
             rgb = self.renderer.render()
             self.renderer.enable_depth_rendering()
             depth = self.renderer.render()

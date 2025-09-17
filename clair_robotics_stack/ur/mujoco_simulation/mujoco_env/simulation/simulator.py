@@ -99,12 +99,15 @@ class Simulator:
 
     def initialize(self) -> None:
         """Initialize the MJCF models for the scene and each robot."""
+        print('self.scene in initialize:', self.scene)
         self.composer.set_base_scene(self.scene)
         for i, (robot_name, robot_spec) in enumerate(self.robots.items()):
             namespace = f"robot_{i}"
             self.composer.attach_robot(robot_spec, namespace)
         self.keyframes = self.composer.extract_keyframes()
         self.physics = physics_from_mjcf_model(self.composer.mjcf_model)
+        # print('self.composer.mjcf_model:',self.composer.mjcf_model.to_xml_string())
+        # print('self.physics:', self.physics.get_state())
 
     def step(self, n_frames: int) -> None:
         """

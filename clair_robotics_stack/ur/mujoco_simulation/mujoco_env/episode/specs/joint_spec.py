@@ -24,6 +24,7 @@ class JointSpec(Spec):
     """
     type: JointType = JointType.FREE
     attrs: ParamsDict = field(default_factory=dict)
+    # print('attrs in JointSpec:', attrs)
     actuators: Sequence[ActuatorSpec] = tuple()
 
     def __post_init__(self):

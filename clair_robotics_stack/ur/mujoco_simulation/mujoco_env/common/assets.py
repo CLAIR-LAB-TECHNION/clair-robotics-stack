@@ -22,8 +22,8 @@ def get_internal_asset_file_path(p: FilePath, asset_type: AssetType | str) -> Fi
         return p
 
     # usage of path separator hints that this is a path
-    if os.sep in p:
-        return Path(p)
+    # if os.sep in p:
+    #     return Path(p)
 
     # verify asset_type input
     if not isinstance(asset_type, AssetType):
@@ -36,4 +36,6 @@ def get_internal_asset_file_path(p: FilePath, asset_type: AssetType | str) -> Fi
         ext = 'xml'
 
     # assemble absolute path to the asset file
+    # print('asset_type.value:', asset_type.value)
+    # print('p:', p)
     return ASSETS_DIR / f'{asset_type.value}s' / p / f'{asset_type.value}.{ext}'

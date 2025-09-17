@@ -126,7 +126,7 @@ class TAMPRunner:
 
             # apply action
             suc = self.apply_action(action)
-            print('action applied, suc:', suc)
+            # print('action applied, suc:', suc)
             if not suc:
                 failures_count += 1
                 continue
@@ -156,13 +156,13 @@ class TAMPRunner:
                     self.state_estimator.estimate_state(observations)
                 )
             else:
-                print('using motion_state_from_env')
+                # print('using motion_state_from_env')
                 objects_positions_in_simEnv =  self.executer.motion_executer.env.get_block_positions_dict()
-                print('objects_positions_in_simEnv:', objects_positions_in_simEnv)
+                # print('objects_positions_in_simEnv:', objects_positions_in_simEnv)
                 self.cur_motion_state = objects_positions_in_simEnv
-                print('cur_motion_state in update_states:', self.cur_motion_state)
+                # print('cur_motion_state in update_states:', self.cur_motion_state)
                 self.cur_task_state = self.state_estimator._estimate_task_state(self.cur_motion_state)
-                print('cur_task_state in update_states:', self.cur_task_state)
+                # print('cur_task_state in update_states:', self.cur_task_state)
                 # print('cur_motion_state in update_states:', self.cur_motion_state)
         else:
             rgb, depth = observations["rgb"], observations["depth"]
@@ -173,11 +173,11 @@ class TAMPRunner:
             # )
             task_state = self.state_estimator([pil_rgb])
             self.cur_task_state = state_dict_to_up_state(self.problem, task_state)
-            print('cur_task_state in update_states:', self.cur_task_state)
+            # print('cur_task_state in update_states:', self.cur_task_state)
             objects_positions_in_simEnv =  self.executer.motion_executer.env.get_block_positions_dict()
-            print('objects_positions_in_simEnv:', objects_positions_in_simEnv)
+            # print('objects_positions_in_simEnv:', objects_positions_in_simEnv)
             self.cur_motion_state = objects_positions_in_simEnv
-            print('cur_motion_state in update_states:', self.cur_motion_state)
+            # print('cur_motion_state in update_states:', self.cur_motion_state)
             
         print('finish update_states')
 
