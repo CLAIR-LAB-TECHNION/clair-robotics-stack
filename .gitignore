@@ -284,10 +284,9 @@ cython_debug/
 **/rgb_frames/*.png
 **/depth_frames/*.png
 
-<<<<<<< HEAD
+**/runs/*
+
 **/runs/*
 
 **/yolov8x-worldv2.pt
-=======
 **/runs/*
->>>>>>> 10929d5... add runs saving in appropriate folders and new scene xml

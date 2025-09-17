@@ -11,7 +11,7 @@ from clair_robotics_stack.ur.mujoco_simulation.mujoco_env.world_utils.configurat
 import time
 
 class SimEnv:
-    def __init__(self, render_mode='rgb_array', cfg=muj_env_config, render_sleep_to_maintain_fps=True):
+    def __init__(self, render_mode='rgb_array', cfg=muj_env_for_s3e_config, render_sleep_to_maintain_fps=True):
         print('start')
         self.render_mode = render_mode
         print('render_mode:', render_mode)
