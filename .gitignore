@@ -285,8 +285,3 @@ cython_debug/
 **/depth_frames/*.png
 
 **/runs/*
-
-**/runs/*
-
-**/yolov8x-worldv2.pt
-**/runs/*
