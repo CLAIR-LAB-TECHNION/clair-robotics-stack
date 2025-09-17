@@ -3,10 +3,10 @@ import os
 import re
 
 # Config
-image_folder = 'rgb_frames'
-output_video_path = 'output_video_with_s3e_planning.mp4'
+image_folder = 'runs/2025-09-17_12-47-30/rgb_frames'
+output_video_path = '2025-09-17_12-47-30.mp4'
 frame_rate = 2
-start_frame = 214  # Include from frame_50.png onwards
+start_frame = 1  # Include from frame_1.png onwards
 
 # Regex to match filenames like "frame_42.png"
 pattern = re.compile(r'^frame_(\d+)\.png$')

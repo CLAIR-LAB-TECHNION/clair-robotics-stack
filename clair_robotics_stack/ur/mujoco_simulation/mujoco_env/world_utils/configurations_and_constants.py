@@ -55,9 +55,9 @@ muj_env_config = dict(
 
 muj_env_with_costume_config = dict(
     scene=dict(
-        resource='clairlab',
+        resource='costume',
         render_camera='top-right',
-        objects=ObjectSpec('can', base_joints=JointSpec('free'), base_pos=[-0.73, -0.6, 0.03]),
+        objects=ObjectSpec('can', base_joints=JointSpec('free'), base_pos=[-0.7, -0.6, 0.03]),
     ),
     robots=dict(
         ur5e_1=dict(
