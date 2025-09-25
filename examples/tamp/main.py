@@ -81,13 +81,9 @@ class PickPlaceTampCallbacks(TAMPRunnerCallbacks):
 
     def on_state_update(self, observations):
         print("State updated")
-        # print("observations['rgb'].shape:", observations['rgb'].shape)
         if self.se_type:
             det_res = self.runner.state_estimator.detector.detect_objects([observations["rgb"]])[-1][0]
-            # plt.figure()
             out = self.runner.state_estimator.detector.get_annotated_images(det_res)
-            # plt.imshow(out)
-            # plt.show()
         # print("task_state from on_state_update:\n", self.runner.cur_task_state)
         # print("motion_state from on_state_update:\n", self.runner.cur_motion_state)
 

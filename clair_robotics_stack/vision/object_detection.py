@@ -29,11 +29,7 @@ class ObjectDetection:
         if is_rgb:
             for i in range(len(im_arr)):
                 cur = im_arr[i]
-                # print('type:', type(cur))
-                # im_arr[i] = np.array(im_arr[i])
-                # print("shape", cur.shape)
                 expanded_im_arr = np.expand_dims(cur, axis=0)
-                # print("shape", cur.shape)
                 im_arr[i] = cv2.cvtColor(expanded_im_arr, cv2.COLOR_RGB2BGR)
 
         results = self.yolo.predict(im_arr, conf=self.min_confidence, agnostic_nms=True, max_det=max_detections)

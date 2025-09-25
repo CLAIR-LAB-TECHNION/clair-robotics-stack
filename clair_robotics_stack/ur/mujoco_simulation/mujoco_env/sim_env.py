@@ -93,25 +93,20 @@ class SimEnv:
     def step(self, target_joint_pos, gripper_closed=None):
         # if reset_pid:
         #    ( self._pid_controller.reset_endpoint(target_joint_pos)
-        # print('start time of step:', time.time())
         if gripper_closed is None:
             gripper_closed = self.gripper_state_closed
         self.gripper_state_closed = gripper_closed
 
         self._env_step(target_joint_pos)
-        # print('self.robots_joint_pos in step:', self.robots_joint_pos)
 
         self._clip_joint_velocities()
 
         if gripper_closed:
             if self._grasp_manager.attached_object_name is not None:
-                # print('gripper is closed. updates grasped_object_pose')
                 self._grasp_manager.update_grasped_object_pose()
             else:
                 is_close_enough = self._grasp_manager.grasp_block_if_close_enough()
-                # print('is_close_enough:', is_close_enough)
         else:
-            # print('gripper is not closed, releasing object')
             self._grasp_manager.release_object()
 
         if self.render_mode == "human":
@@ -135,13 +130,10 @@ class SimEnv:
         elif self.render_mode == "rgb_array":
             self._mj_data = self._env.sim.data
             self.renderer.update_scene(self._mj_data, "robot-cam")
-            # print("self.renderer._depth_rendering 128:",self.renderer._depth_rendering)
             rgb = self.renderer.render()
             self.renderer.enable_depth_rendering()
             depth = self.renderer.render()
             self.renderer.disable_depth_rendering()
-            # print("rgb shape:", rgb.shape)
-            # print("depth shape:", depth.shape)
             return rgb, depth
             # return rgb
         elif self.render_mode == "depth_array":

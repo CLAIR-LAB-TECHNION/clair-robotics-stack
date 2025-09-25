@@ -59,9 +59,6 @@ def __list_or_single_from_name_or_cfg(asset_or_cfg: Union[AssetOrConfig, list[As
 
 
 def __type_from_name_or_cfg(inp: AssetOrConfig | SpecT, spec_cls: type[SpecT]) -> SpecT:
-    # print('inp:', inp)
-    # print('type(inp):', type(inp))
-    # print('spec_cls:', spec_cls)
     if isinstance(inp, spec_cls):
         return inp
     if isinstance(inp, dict):

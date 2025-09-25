@@ -13,7 +13,6 @@ class ObjectManager:
 
         # manipulated objects have 6dof free joint that must be named in the mcjf.
         all_joint_names = [self._mj_model.joint(i).name for i in range(self._mj_model.njnt)]
-        # print('all_joint_names:', all_joint_names)
 
         # all bodies that ends with "box"
         prefixs = ("can", "block", "bread", "lemon", "bottle", "milk", "cereal")
@@ -113,17 +112,12 @@ class ObjectManager:
             return [(name,self.get_block_position_from_mj_id(self.objects_mjdata_dict[name].id)) for name in self.object_names]
 
     def get_all_block_positions_by_body_name(self)-> Dict[str, np.ndarray]:
-        # print('self.object_names in get_all_block_positions_by_body_name:', self.object_names)
         joint_ids = [mujoco.mj_name2id(self._mj_model, mujoco.mjtObj.mjOBJ_JOINT, joint_name) for joint_name in self.object_names]
-        # print('joint_ids:', joint_ids)
         body_ids = [self._mj_model.jnt_bodyid[joint_id] for joint_id in joint_ids]
-        # print('body_ids:', body_ids)
 
         body_names = [mujoco.mj_id2name(self._mj_model, mujoco.mjtObj.mjOBJ_BODY, body_id) for body_id in body_ids]
-        # print('body_names:', body_names)
 
         body_names = [re.sub(r'[^a-zA-Z0-9_-]', '', body_name) for body_name in body_names]
-        # print('body_names after clean:', body_names)
 
         
         return {body_name: self.get_block_position_from_mj_id(self.objects_mjdata_dict[name].id) for body_name, name in zip(body_names, self.object_names)}

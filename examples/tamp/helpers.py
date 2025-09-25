@@ -235,7 +235,6 @@ class SimulationSensors:
 
 
     def __call__(self) -> dict:
-        # print('enter __call__')
         out = {}
         out["rgb"], out["depth"] = self.env.render()
 
@@ -419,7 +418,6 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
             print(f"Block {block} not in motion state")
             return False
         block_pos = motion_state[block]
-        # print('block_pos:', block_pos)
         min_pos, max_pos = self.location_bounds[location]
         return all(min_pos[i] <= block_pos[i] <= max_pos[i] for i in range(3))
     #TODO: check taht there is no colflict in the heights, between static ones that i put to expected ones from self
@@ -427,7 +425,6 @@ class SimulationStateEstimator(ThreeLayerStateEstimator):
         """Predicate: robot is holding the block"""
         if block not in motion_state:
             return False
-        # print('motion_state[block][2]:', motion_state[block][2])
         return bool(motion_state[block][2] > self.holding_height)
 
 
