@@ -17,6 +17,11 @@ pip install poetry
 poetry install --no-root
 ```
 
+#### Install stack
+```bash
+pip install -e .
+```
+
 ## Validating Installations for Lab Urs 
 make sure:
 * both ur5e_2 robot is fully on (the one at the end)
@@ -28,7 +33,7 @@ make sure:
 
 run simple example:
 ```bash
-python -m ur_lab.examples.lab_basic_example
+python examples/0_lab_basic_example.py 
 ```
 if you get errors, you can try and ping the robot ip adress. You can see the ip at *ur_lab/robot_inteface/robots_metadata.py*
 
@@ -38,7 +43,7 @@ Some examples are on jupyter notebooks, You should install jupyterlab on your en
 To run the simulation you will have to install the ur_mujoco_sim/requirements.txt directly to pip
 
 ```bash
-pip install -r ur_mujoco_sim/requirements.txt
+pip install -r ur/mujoco_simulation/requirements.txt
 ```
 
 Then you can run the test file
