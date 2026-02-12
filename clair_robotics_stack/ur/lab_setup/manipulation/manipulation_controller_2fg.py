@@ -15,8 +15,8 @@ import logging
 
 class ManipulationController2FG(RobotInterfaceWithMP):
     def __init__(self, robot_ip, robot_name, motion_palnner: MotionPlanner,
-                 geomtry_and_transofms: GeometryAndTransforms, freq=50, gripper_id=0):
-        super().__init__(robot_ip, robot_name, motion_palnner, geomtry_and_transofms, freq)
+                 geomtry_and_transofms: GeometryAndTransforms, freq=50, gripper_id=0, **kwargs):
+        super().__init__(robot_ip, robot_name, motion_palnner, geomtry_and_transofms, freq, **kwargs)
 
         self.gripper = TwoFG7(robot_ip, gripper_id)
 
@@ -24,10 +24,10 @@ class ManipulationController2FG(RobotInterfaceWithMP):
         self.max_width = self.gripper.twofg_get_max_external_width()
 
     @classmethod
-    def build_from_robot_name_and_ip(cls, robot_ip, robot_name):
+    def build_from_robot_name_and_ip(cls, robot_ip, robot_name, **kwargs):
         motion_planner = MotionPlanner()
         geomtry_and_transofms = GeometryAndTransforms(motion_planner)
-        return cls(robot_ip, robot_name, motion_planner, geomtry_and_transofms)
+        return cls(robot_ip, robot_name, motion_planner, geomtry_and_transofms, **kwargs)
 
     #### Gripper functions ####
     def set_gripper(self, width, force, speed, wait_time=0.5):

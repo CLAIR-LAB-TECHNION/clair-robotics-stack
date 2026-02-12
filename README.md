@@ -17,7 +17,7 @@ pip install poetry
 poetry install --no-root
 ```
 
-#### Install stack
+#### Install stack in path
 ```bash
 pip install -e .
 ```
@@ -49,4 +49,9 @@ pip install -r ur/mujoco_simulation/requirements.txt
 Then you can run the test file
 ```bash
 python -m ur_mujoco_sim.sim_testing
+```
+
+## Installation for notebook demos
+```bash
+pip install jupyterlab ipywidgets
 ```
